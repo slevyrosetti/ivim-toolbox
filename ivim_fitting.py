@@ -29,6 +29,7 @@ class IVIMfit:
         self.ofit_dir = ofit_dir
         self.multithreading = multithreading
         self.ivim_metrics_all_voxels = {}
+        self.plot_dir = ''
         self.save_plots = save_plots
         self.model = model
 
@@ -1090,7 +1091,7 @@ if __name__ == "__main__":
     requiredArgs.add_argument('-b', '--bval', dest='bval_fname', help="Path to corresponding bval file.", type=str, required=True)
     requiredArgs.add_argument('-ma', '--mask', dest='mask_fname', help='Path to mask nifti file defining voxels to be considered.', type=str, required=True)
 
-    optionalArgs.add_argument('-mo', '--model', dest='model', help='Model type to fit:1-pool or 2-pool.', type=str, required=False, default='1shot_initD_v3')
+    optionalArgs.add_argument('-mo', '--model', dest='model', help='Fit approach: One-step or Two-step.', type=str, required=False, default='One-step')
     optionalArgs.add_argument('-o', '--ofolder', dest='ofolder', help='Output folder name.', type=str, required=False, default='params_map')
     optionalArgs.add_argument('-mt', '--multithreading', dest='multithreading', help='Parallelize fit on multiple threads.', type=str, required=False, default='1')
     parser._action_groups.append(optionalArgs)
