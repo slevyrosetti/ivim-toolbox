@@ -13,12 +13,19 @@ import numpy as np
 import cPickle as pickle
 import argparse
 import time
+import os
 
 def main(model, snr, ofolder, bvals):
     """Main."""
 
-    # get starting time
+    # get starting time and create output folder if does not exist yet
     start_time = time.strftime("%y%m%d%H%M%S")
+    if not os.path.exists(ofolder):
+        os.mkdir(ofolder)
+        print "\nDirectory", ofolder, "created.\n"
+    else:
+        print "\nDirectory", ofolder, "already exists.\n"
+
 
     # set fit parameters
     ivim_fitting.approach = model
@@ -54,7 +61,7 @@ def main(model, snr, ofolder, bvals):
 
     # fit
     plots_idx = tuple([np.array(range(len(F_range)*len(Dstar_range)*len(D_range)*n_noise_simu)), np.zeros((len(F_range)*len(Dstar_range)*len(D_range)*n_noise_simu), dtype=int), np.zeros((len(F_range)*len(Dstar_range)*len(D_range)*n_noise_simu), dtype=int)])
-    ivim_fit = ivim_fitting.IVIMfit(bvals=bvals, voxels_values=S_simu, voxels_idx=plots_idx, multithreading=1)
+    ivim_fit = ivim_fitting.IVIMfit(bvals=bvals, voxels_values=S_simu, voxels_idx=plots_idx, multithreading=1, model=model, save_plots=False)
     ivim_fit.run_fit(true_params_values)
 
     pickle.dump([ivim_fit.ivim_metrics_all_voxels, true_params_values, F_range, Dstar_range, D_range, n_noise_simu, snr], open(ofolder+'/sim_results_'+start_time+'.pkl', 'w'))
@@ -71,11 +78,11 @@ if __name__ == "__main__":
     optionalArgs = parser._action_groups.pop()
     requiredArgs = parser.add_argument_group('required arguments')
 
-    requiredArgs.add_argument('--model', dest='model', help='Fit approach: One-set or Two-step.', type=str, required=True)
-    requiredArgs.add_argument('--snr', dest='snr', help='Simulated SNR.', type=str, required=True)
-    requiredArgs.add_argument('--ofolder', dest='ofolder', help="Output directory for results.", type=str, required=True)
+    requiredArgs.add_argument('-model', dest='model', help='Fit approach: One-step or Two-step.', type=str, required=True)
+    requiredArgs.add_argument('-snr', dest='snr', help='Simulated SNR.', type=float, required=True)
+    requiredArgs.add_argument('-ofolder', dest='ofolder', help="Output directory for results.", type=str, required=True)
 
-    optionalArgs.add_argument('--bval', dest='bvals', help='B-value distribution to fit.', type=str, required=False, default='5,10,15,20,30,50,75,100,125,150,200,250,600,700,800')
+    optionalArgs.add_argument('-bval', dest='bvals', help='B-value distribution to fit.', type=str, required=False, default='5,10,15,20,30,50,75,100,125,150,200,250,600,700,800')
     parser._action_groups.append(optionalArgs)
 
     args = parser.parse_args()
