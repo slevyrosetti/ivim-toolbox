@@ -35,7 +35,7 @@ class MyFrameName(wx.Frame):
 
         # model list
         ModelChoiceName = wx.StaticText(self, label='Fit approach', style=wx.ALIGN_LEFT)
-        self.ModelChoice = wx.Choice(self, choices=['Two-step', 'One-step'])
+        self.ModelChoice = wx.Choice(self, choices=['two-step', 'one-step'])
         self.ModelChoice.SetSelection(1)
 
         # output folder
