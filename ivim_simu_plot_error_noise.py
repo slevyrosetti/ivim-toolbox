@@ -187,8 +187,8 @@ def main(ifname, ofname):
     mean_std_D_est_err = np.mean(std_sim_D_est_err_percent[true_params_values_reshape[0, :, :, :, 0] > 0])
     mean_std_FDstar_est_err = np.mean(std_sim_FDstar_est_err_percent[true_params_values_reshape[0, :, :, :, 0] > 0])
 
-    plt.rcParams.update({'font.size': 25})
-    fs_labels = 18
+    plt.rcParams.update({'font.size': 20})
+    fs_labels = 16
     # display Fivim in %
     F_range = 100*F_range
 
