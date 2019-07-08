@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-This program generates data from IVIM representation, add Gaussian noise to match selected SNR and fit those data to get fit error.
+This program generates data from IVIM representation, add Gaussian noise to match selected SNR and fits those data to get fit error.
 
 Created on Mon Jul  8 16:03:43 2019
 
