@@ -1067,9 +1067,9 @@ def fit_warpper(args_fit_func):
         return fit_combine_2shots_1shot_lemke(*args_fit_func)
     elif approach == '1shot_initD':
         return fit_1shot_initD(*args_fit_func)
-    elif approach == 'Two-step':
+    elif approach == 'two-step':
         return fit_2shots(*args_fit_func)
-    elif approach == 'One-step':
+    elif approach == 'one-step':
         return fit_1shot_initD_v2(*args_fit_func)
     elif approach == '1shot_initD_noise':
         return fit_1shot_initD_noise(*args_fit_func)
@@ -1091,7 +1091,7 @@ if __name__ == "__main__":
     requiredArgs.add_argument('-b', '--bval', dest='bval_fname', help="Path to corresponding bval file.", type=str, required=True)
     requiredArgs.add_argument('-ma', '--mask', dest='mask_fname', help='Path to mask nifti file defining voxels to be considered.', type=str, required=True)
 
-    optionalArgs.add_argument('-mo', '--model', dest='model', help='Fit approach: One-step or Two-step.', type=str, required=False, default='One-step')
+    optionalArgs.add_argument('-mo', '--model', dest='model', help='Fit approach: one-step or two-step.', type=str, required=False, default='one-step')
     optionalArgs.add_argument('-o', '--ofolder', dest='ofolder', help='Output folder name.', type=str, required=False, default='params_map')
     optionalArgs.add_argument('-mt', '--multithreading', dest='multithreading', help='Parallelize fit on multiple threads.', type=str, required=False, default='1')
     parser._action_groups.append(optionalArgs)
