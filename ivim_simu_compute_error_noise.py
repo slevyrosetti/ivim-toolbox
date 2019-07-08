@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Generate data from IVIM representation, add Gaussian noise to match selected SNR and fit those data to get fit error.
+This program generates data from IVIM representation, add Gaussian noise to match selected SNR and fit those data to get fit error.
 
 Created on Mon Jul  8 16:03:43 2019
 
@@ -25,7 +25,6 @@ def main(model, snr, ofolder, bvals):
         print "\nDirectory", ofolder, "created.\n"
     else:
         print "\nDirectory", ofolder, "already exists.\n"
-
 
     # set fit parameters
     ivim_fitting.approach = model
@@ -66,19 +65,19 @@ def main(model, snr, ofolder, bvals):
 
     pickle.dump([ivim_fit.ivim_metrics_all_voxels, true_params_values, F_range, Dstar_range, D_range, n_noise_simu, snr], open(ofolder+'/sim_results_'+start_time+'.pkl', 'w'))
 
-    print('==> Simulations result file was stored here: '+ofolder+'/sim_results_'+start_time+'.pkl')
+    print('==> Simulations result file was saved as: '+ofolder+'/sim_results_'+start_time+'.pkl')
 
 
 # ==========================================================================================
 if __name__ == "__main__":
 
     # parse arguments
-    parser = argparse.ArgumentParser(description='This program generates data from IVIM representation, adds random Gaussian noise to match SNR specified by user, fit data to get IVIM params back and quantifies mean parameters estimation error across noise draws.')
+    parser = argparse.ArgumentParser(description='This program generates data from IVIM representation, adds random Gaussian noise to match SNR specified by user, fits data to get IVIM params back and quantifies mean parameters estimation error across noise draws.')
 
     optionalArgs = parser._action_groups.pop()
     requiredArgs = parser.add_argument_group('required arguments')
 
-    requiredArgs.add_argument('-model', dest='model', help='Fit approach: One-step or Two-step.', type=str, required=True)
+    requiredArgs.add_argument('-model', dest='model', help='Fit approach: one-step or two-step.', type=str, required=True)
     requiredArgs.add_argument('-snr', dest='snr', help='Simulated SNR.', type=float, required=True)
     requiredArgs.add_argument('-ofolder', dest='ofolder', help="Output directory for results.", type=str, required=True)
 
