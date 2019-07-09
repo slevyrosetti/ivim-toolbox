@@ -21,7 +21,7 @@ import warnings
 import os
 
 
-def main(model, ofolder, bvals, condition, snr_init):
+def main(model, ofolder, bvals, condition, snr_init, F_range, Dstar_range, D_range):
     """Main."""
 
     # set fit parameters
@@ -29,12 +29,6 @@ def main(model, ofolder, bvals, condition, snr_init):
     bvals = np.array(map(int, bvals.split(',')))
     s0 = 600.
     n_noise_simu = 10
-
-    # define variations range for Fivim, Dstar and D
-    n_sample = 10
-    F_range = np.linspace(start=0.01, stop=0.30, num=n_sample)
-    Dstar_range = np.linspace(start=3.0e-3, stop=35e-3, num=n_sample)
-    D_range = np.array([0.3e-3, 1.5e-3])
 
     # measure duration
     start_time = time.time()
@@ -115,11 +109,11 @@ def main(model, ofolder, bvals, condition, snr_init):
                 if minSNR_diverging[i_F, i_Dstar, i_D]:
                     warnings.warn('/!\/!\/!\ SNR diverging for Fivim=%.3f, D*=%.3e, D=%.3e ==> stopping search for this set of parameters at SNR=%d' % (F_range[i_F], Dstar_range[i_Dstar], D_range[i_D], snr[-1]))
                 else:
-                    print('==> Found minimum SNR yielding estimation error < 10%%: SNRmin = %d (error on F.D* = %.3f%%)' % (snr_min_acceptable, snr_min_acceptable_err[3]))
+                    print('==> Found minimum SNR yielding estimation error < 10%% on %s with Fivim=%.3f, D*=%.3e, D=%.3e:\n\t\t\t\t\tSNRmin = %d (error on F.D* = %.3f%%)' % (condition, F_range[i_F], Dstar_range[i_Dstar], D_range[i_D], snr_min_acceptable, snr_min_acceptable_err[3]))
                     minSNR[i_F, i_Dstar, i_D] = snr_min_acceptable
                 mean_err_for_minSNR[:, i_F, i_Dstar, i_D] = snr_min_acceptable_err[:]
                 true_params_values[i_F, i_Dstar, i_D] = {'S0': s0, 'D': D_range[i_D], 'Fivim': F_range[i_F], 'Dstar': Dstar_range[i_Dstar]}
-                print('==> %.3f%% done.\n' % (100*float(i_F*n_sample**2 + i_Dstar*n_sample + i_D)/(n_sample**3)))
+                print('==> %.3f%% done.\n' % (100*float(i_F*len(F_range)**2 + i_Dstar*len(Dstar_range) + i_D+1)/(len(F_range)*len(Dstar_range)*len(D_range))))
 
     # save estimation error and true values
     pickle.dump([minSNR, mean_err_for_minSNR, minSNR_diverging, true_params_values, F_range, Dstar_range, D_range, n_noise_simu], open(ofolder+'/sim_results_'+start_time_str+'.pkl', 'w'))
@@ -250,6 +244,24 @@ def update_SNR_v3(snr, err, snr_min_acceptable, snr_max_nonacceptable, snr_min_a
     return round(new_snr, 0), opt_snr_found, snr_min_acceptable, snr_max_nonacceptable, snr_min_acceptable_err
 
 
+def parse_true_value_range(rangeArgs):
+    """
+    Parse the range of true IVIM parameter values.
+    :param rangeArgs: user input for IVIM range arguments
+    :return: numpy array of the true IVIM parameter values to simulate
+    """
+
+    rangeArgs =rangeArgs.strip()
+    if ':' in rangeArgs:
+        rangeStr = rangeArgs.split(':')
+        param_range = np.linspace(start=float(rangeStr[0]), num=float(rangeStr[1]), stop=float(rangeStr[2]))
+    else:
+        rangeStr = rangeArgs.split(',')
+        param_range = np.array(rangeStr, dtype=float)
+
+    return param_range
+
+
 # ==========================================================================================
 if __name__ == "__main__":
 
@@ -265,10 +277,13 @@ if __name__ == "__main__":
     optionalArgs.add_argument('-bval', dest='bvals', help='B-value distribution to fit.', type=str, required=False, default='5,10,15,20,30,50,75,100,125,150,200,250,600,700,800')
     optionalArgs.add_argument('-condition', dest='condition', help='Estimation error condition on F.D* (\"FDstar\") or on all IVIM parameters (\"all\").', type=str, required=False, default='FDstar')
     optionalArgs.add_argument('-snr', dest='snr_init', help='Initial SNR to start search.', type=float, required=False, default=1500.)
+    optionalArgs.add_argument('-F', dest='F_range', help='Range of Fivim true values.', type=str, required=False, default='0.01:10:0.30')
+    optionalArgs.add_argument('-Dstar', dest='Dstar_range', help='Range of Dstar true values.', type=str, required=False, default='3.0e-3:10:35e-3')
+    optionalArgs.add_argument('-D', dest='D_range', help='Range of D true values.', type=str, required=False, default='0.3e-3,1.5e-3')
     parser._action_groups.append(optionalArgs)
 
     args = parser.parse_args()
 
     # run main
-    main(model=args.model, ofolder=args.ofolder, bvals=args.bvals, condition=args.condition, snr_init=args.snr_init)
+    main(model=args.model, ofolder=args.ofolder, bvals=args.bvals, condition=args.condition, snr_init=args.snr_init, F_range=parse_true_value_range(args.F_range), Dstar_range=parse_true_value_range(args.Dstar_range), D_range=parse_true_value_range(args.D_range))
 
