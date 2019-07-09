@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Plot fitting error computed from Monte-Carlo simulations with function "ivim_simu_plot_error_noise".
+Plot fitting error computed from Monte-Carlo simulations with program "ivim_simu_plot_error_noise".
 
 
 
@@ -448,7 +448,7 @@ def main(ifname, ofname):
 if __name__ == "__main__":
 
     # parse arguments
-    parser = argparse.ArgumentParser(description='This program produces the figures plotting the estimation errors from simulations run with function \"ivim_simu_compute_error_noise\".')
+    parser = argparse.ArgumentParser(description='This program produces the figures plotting the estimation errors from simulations run with program \"ivim_simu_compute_error_noise\".')
 
     optionalArgs = parser._action_groups.pop()
     requiredArgs = parser.add_argument_group('required arguments')
