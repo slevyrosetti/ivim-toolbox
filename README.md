@@ -1,5 +1,11 @@
-# :bulb: :flashlight: ivim-toolbox :wrench: :mag:
-This toolbox is dedicated to model fitting and simulation for Intra-Voxel Incoherent Motion (IVIM) MR imaging. It gathers tools, on the one hand, to fit IVIM bi-exponential signal representation voxel-wise and, on the other hand, to run Monte Carlo simulations in order to assess the estimation error on parameters as well as to calculate the minimum required SNR to get accurate estimation.
+#
+
+#  :bulb: :flashlight: ivim-toolbox :wrench: :mag: </font>
+
+# 
+
+<p align="center">
+This toolbox is dedicated to model fitting and simulation for Intra-Voxel Incoherent Motion (IVIM) MR imaging. It gathers tools, on the one hand, to fit IVIM bi-exponential signal representation voxel-wise and, on the other hand, to run Monte Carlo simulations in order to assess the estimation error on parameters as well as to calculate the minimum required SNR to get accurate estimation.</p>
 
 We thank you for choosing our toolbox! :heart: According to the MIT licence, please cite the following article:
 > **Lévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic Resonance in Medicine, 1902:334-357, 2019.**
@@ -11,6 +17,7 @@ This toolbox is only based on Python. Therefore, it should run on any OS (Mac OS
 Only requirements are:
   1. Python
   2. Specific Python modules (i.e. not installed in default Python)
+  3. ivim-toolbox files
   
   ## 1. Python
 We recommend to install Python through the [Conda package](https://docs.conda.io/projects/conda/en/latest/user-guide/install/). It is very easy, follow the link, select your Operating System and run the installer (either for Miniconda or Anaconda).
@@ -36,7 +43,7 @@ If you did not install Python through the Conda package, you can install those m
 
 *The `pip` command should be available on default Python but if not, you can find information on how to install it [here](https://packaging.python.org/tutorials/installing-packages/). The command to update modules with `pip` is `pip install <module name> --upgrade`.*
 
-  ## ivim-toolbox
+  ## 3. ivim-toolbox
 Finally, [download](https://github.com/slevyrosetti/ivim-toolbox/archive/master.zip) this repository. Add the path to your `.bash_profile` (or `.bashrc` as preferred). To do so, type the following command in a Terminal:
 
 `echo 'export PATH=<path to ivim-toolbox directory>:$PATH' >>~/.bash_profile` where `<path to ivim-toolbox directory>` has to be replaced by the path to the ivim-toolbox directory (e.g. `/Users/slevyrosetti/ivim-toolbox`).
@@ -48,6 +55,7 @@ You will find in the directory `test_data` example data that you can use to test
  - `dwi_is.nii.gz` are human spinal cord IVIM data acquired at 7T with diffusion encoding in the Inferior-Superior direction and with b-values as defined in `bval_rl.txt`
  - `cord_seg_dilated.nii.gz` is a large mask including the cord (to use for voxel-wise fitting)
  - directory `results_you_should_get` includes the results you should get using the example commands detailed below
+
 Those data are the single-subject data presented in Figure 6 of the paper *Lévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic Resonance in Medicine, 1902:334-357, 2019.*
 
 The tools available are:
@@ -61,7 +69,8 @@ The tools available are:
   - `ivim_toolbox.py`: launch the graphical user interface
   
 All tools can be used from the Terminal and some of the them can be run through a graphical user interface.
-To display help for any tool, type `<name of tool>.py --help` in a Terminal.
+
+**To display all available options for any tool, type `<name of tool>.py --help` in a Terminal (e.g. `ivim_fitting.py --help`).**
 
 ## Example commands (to be run in a Terminal window)
 ### Open graphical user interface
@@ -82,7 +91,7 @@ ivim_fitting.py -i dwi_rl.nii.gz -b bval_rl.txt -ma cord_seg_dilated.nii.gz -mo 
 ```
 
 ### Check performance of fitting algorithm on perfect data
-Compute estimation error of the one-step fit approach on perfect data with F values varying from 1 to 30%, D* values varying from 3 to 35e-3 mm2/s and D varying from 0.2 to 2.9e-3 mm2/s; a result file will be created in folder `one_steo_fit_err`:
+Compute estimation error of the one-step fit approach on perfect data with f<sub>IVIM</sub> values varying from 1 to 30%, D* values varying from 3 to 35e-3 mm<sup>2</sup>/s and D varying from 0.2 to 2.9e-3 mm<sup>2</sup>/s; a result file will be created in folder `one_step_fit_err`:
 ```
 ivim_simu_compute_error_nonoise.py -model one-step -ofolder one_step_fit_err -bval 5,10,20,30,50,75,150,250,600,700,800
 ```
@@ -102,7 +111,7 @@ ivim_simu_plot_error_nonoise.py -input two_step_fit_err_snr180/sim_results_*.pkl
 ```
 
 ### Calculate required SNR
-Calculate the minimum required SNR to estimate the product of parameters F and D* within 10% error margins for F varying from 1 to 30% (with 10 steps), D* varying from 3 to 35e-3 mm2/s (with 10 steps) and D equals 0.3 and 1.5e-3 mm2/s
+Calculate the minimum required SNR to estimate the product of parameters f<sub>IVIM</sub> and D* within 10% error margins for f<sub>IVIM</sub> varying from 1 to 30% (with 10 steps), D* varying from 3 to 35e-3 mm<sup>2</sup>/s (with 10 steps) and D equals 0.3 and 1.5e-3 mm<sup>2</sup>/s
 ```
 ivim_simu_compute_required_snr.py -model one-step -ofolder required_snr_one_step_fit -bval 5,10,20,30,50,75,150,250,600,700,800 -condition FDstar -F 0.01:10:0.30 -Dstar 3.0e-3:10:35e-3 -D 0.3e-3,1.5e-3
 ```
