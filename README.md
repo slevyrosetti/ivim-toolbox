@@ -1,5 +1,8 @@
 # ivim-toolbox :100:
-This toolbox is dedicated to model fitting and simulation for Intra-Voxel Incoherent Motion (IVIM) MR imaging. It gathers scripts, on the one hand, to fit IVIM bi-exponential signal representation voxel-wise and, on the other hand, to run Monte Carlo simulations in order to assess the estimation error on parameters as well as the minimum required SNR to get accurate estimation.
+This toolbox is dedicated to model fitting and simulation for Intra-Voxel Incoherent Motion (IVIM) MR imaging. It gathers tools, on the one hand, to fit IVIM bi-exponential signal representation voxel-wise and, on the other hand, to run Monte Carlo simulations in order to assess the estimation error on parameters as well as to calculate the minimum required SNR to get accurate estimation.
+
+We thank you for choosing our toolbox! :heart: According to the MIT licence, please cite the following article:
+> **Lévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic Resonance in Medicine, 1902:334-357, 2019.**
 
 # Operating systems
 This toolbox is only based on Python. Therefore, it should run on any OS (Mac OSX, Linux, Windows). However, it has been developed and extensively tested on Mac OSX. Some light errors might pop up when using on Linux or Windows but **feel free to open an issue [here](https://github.com/slevyrosetti/ivim-toolbox/issues) or to contact me at simon.levy@mines-ales.org if you face any problem.**
@@ -39,15 +42,14 @@ Finally, [download](https://github.com/slevyrosetti/ivim-toolbox/archive/master.
 `echo 'export PATH=<path to ivim-toolbox directory>:$PATH' >>~/.bash_profile` where `<path to ivim-toolbox directory>` has to be replaced by the path to the ivim-toolbox directory (e.g. `/Users/slevyrosetti/ivim-toolbox`).
 
 # Get started
-*Some of the tools can be run through a graphical user interface; to jump there click [here](https://github.com/slevyrosetti/ivim-toolbox#installation).*
-
 You will find in the directory `test_data` example data that you can use to test your installation:
+ - `dwi_rl.nii.gz` are human spinal cord IVIM data acquired at 7T with diffusion encoding in the Right-Left direction and with b-values as defined in `bval_rl.txt`
+ - `dwi_ap.nii.gz` are human spinal cord IVIM data acquired at 7T with diffusion encoding in the Anterior-Posterior direction and with b-values as defined in `bval_rl.txt`
+ - `dwi_is.nii.gz` are human spinal cord IVIM data acquired at 7T with diffusion encoding in the Inferior-Superior direction and with b-values as defined in `bval_rl.txt`
+ - `cord_seg_dilated.nii.gz` is a large mask including the cord (to use for voxel-wise fitting)
+Those data are the single-subject data presented in Figure 6 of the paper *Lévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic Resonance in Medicine, 1902:334-357, 2019.*
 
-All tools can be used from the Terminal and some of the them can be run through a graphical user interface; to jump there click [here](https://github.com/slevyrosetti/ivim-toolbox#installation).
-
-Let's start by the Terminal use. So to get started, open a Terminal.
-
-The tools available in this toolbox are the following:
+The tools available are:
   - `ivim_fitting.py`: fit IVIM biexponential signal representation to NIFTI data according to specified fitting approach
   - `ivim_simu_compute_error_nonoise.py`: compute error of a given fitting approach according to true IVIM values
   - `ivim_simu_plot_error_nonoise.py`: plot results from previous tool
@@ -56,10 +58,21 @@ The tools available in this toolbox are the following:
   - `ivim_simu_compute_required_snr.py`: compute required SNR to estimate parameters within 10% error margins for a given fitting approach and according to true IVIM values
   - `ivim_simu_plot_required_snr.py`: plot results from previous tool
   - `ivim_toolbox.py`: launch the graphical user interface
-To display help for any tool, type `<name of tool>.py -h`.
+  
+All tools can be used from the Terminal and some of the them can be run through a graphical user interface.
+To display help for any tool, type `<name of tool>.py --help` in a Terminal.
 
-## Example commands
+## Example commands (to be run in a Terminal window)
+### Open graphical user interface
+`ivim_toolbox.py`
+Two frames will open. The first is to fit the IVIM biexponential signal representation to NIFTI data according to specified fitting approach (similar to function `ivim_fitting.py`). The second is to compute required SNR to estimate parameters within 10% error margins for a given fitting approach and according to true IVIM values (similart to `ivim_simu_compute_required_snr.py`).
 
+### Fit IVIM data
+`cd test_data` <-- Go to the folder where the data are stored
+
+`ivim_fitting.py -i dwi_rl.nii.gz -b bval_rl.txt -ma cord_seg_dilated.nii.gz -mo one-step -o ivim_maps_rl -mt 1` <-- Fit the IVIM data acquired with diffusion encoding in the Right-Left direction, voxel-by-voxel for voxels within the mask only, using the one-step fitting approach and running on all threads available to speed up the calculation. IVIM maps will be output in a folder named `ivim_maps_rl`
+
+### 
 
 
 
