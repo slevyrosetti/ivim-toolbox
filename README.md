@@ -64,16 +64,41 @@ To display help for any tool, type `<name of tool>.py --help` in a Terminal.
 
 ## Example commands (to be run in a Terminal window)
 ### Open graphical user interface
-`ivim_toolbox.py`
+````
+ivim_toolbox.py
+```
 Two frames will open. The first is to fit the IVIM biexponential signal representation to NIFTI data according to specified fitting approach (similar to function `ivim_fitting.py`). The second is to compute required SNR to estimate parameters within 10% error margins for a given fitting approach and according to true IVIM values (similart to `ivim_simu_compute_required_snr.py`).
 
 ### Fit IVIM data
-`cd test_data` <-- Go to the folder where the data are stored
+Go to the folder where the data are stored
+```
+cd test_data
+```
 
-`ivim_fitting.py -i dwi_rl.nii.gz -b bval_rl.txt -ma cord_seg_dilated.nii.gz -mo one-step -o ivim_maps_rl -mt 1` <-- Fit the IVIM data acquired with diffusion encoding in the Right-Left direction, voxel-by-voxel for voxels within the mask only, using the one-step fitting approach and running on all threads available to speed up the calculation. IVIM maps will be output in a folder named `ivim_maps_rl`
+Fit the IVIM data acquired with diffusion encoding in the Right-Left direction, voxel-by-voxel for voxels within the mask only, using the one-step fitting approach and running on all threads available to speed up the calculation. IVIM maps will be output in a folder named `ivim_maps_rl`
+```
+ivim_fitting.py -i dwi_rl.nii.gz -b bval_rl.txt -ma cord_seg_dilated.nii.gz -mo one-step -o ivim_maps_rl -mt 1
+```
 
-### 
+### Check performance of fitting algorithm on perfect data
+Compute estimation error of the one-step fit approach on perfect data with F values varying from 1 to 30%, D* values varying from 3 to 35e-3 mm2/s and D varying from 0.2 to 2.9e-3 mm2/s; a result file will be created in folder `one_steo_fit_err`:
+```
+ivim_simu_compute_error_nonoise.py -model one-step -ofolder one_step_fit_err -bval 5,10,20,30,50,75,150,250,600,700,800
+```
+Plot the results with "error_plot" as output file name:
+```
+ivim_simu_plot_error_nonoise.py -input one_step_fit_err/sim_results_*.pkl -oname error_plot
+```
 
+### Compute estimation error of fitting algorithm for a given SNR
+Compute estimation error of the two-step fit approach on simulated data with SNR=180 (Monte-Carlo simulations) with IVIM true values varying in the same range as the previous one; similarly, a result file will be created in folder `two_step_fit_err_snr180`:
+```
+ivim_simu_compute_error_noise.py -model two-step -snr 180 -ofolder two_step_fit_err_snr180 -bval 5,10,20,30,50,75,150,250,600,700,800
+```
+Plot the results with "error_plot" as output file name:
+```
+ivim_simu_plot_error_nonoise.py -input two_step_fit_err_snr180/sim_results_*.pkl -oname error_plot
+```
 
 
 
