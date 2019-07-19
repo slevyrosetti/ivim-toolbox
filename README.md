@@ -1,4 +1,4 @@
-# ivim-toolbox :100:
+# :bulb: :flashlight: ivim-toolbox :wrench: :mag:
 This toolbox is dedicated to model fitting and simulation for Intra-Voxel Incoherent Motion (IVIM) MR imaging. It gathers tools, on the one hand, to fit IVIM bi-exponential signal representation voxel-wise and, on the other hand, to run Monte Carlo simulations in order to assess the estimation error on parameters as well as to calculate the minimum required SNR to get accurate estimation.
 
 We thank you for choosing our toolbox! :heart: According to the MIT licence, please cite the following article:
@@ -47,6 +47,7 @@ You will find in the directory `test_data` example data that you can use to test
  - `dwi_ap.nii.gz` are human spinal cord IVIM data acquired at 7T with diffusion encoding in the Anterior-Posterior direction and with b-values as defined in `bval_rl.txt`
  - `dwi_is.nii.gz` are human spinal cord IVIM data acquired at 7T with diffusion encoding in the Inferior-Superior direction and with b-values as defined in `bval_rl.txt`
  - `cord_seg_dilated.nii.gz` is a large mask including the cord (to use for voxel-wise fitting)
+ - directory `results_you_should_get` includes the results you should get using the example commands detailed below
 Those data are the single-subject data presented in Figure 6 of the paper *Lévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic Resonance in Medicine, 1902:334-357, 2019.*
 
 The tools available are:
@@ -64,7 +65,7 @@ To display help for any tool, type `<name of tool>.py --help` in a Terminal.
 
 ## Example commands (to be run in a Terminal window)
 ### Open graphical user interface
-````
+```
 ivim_toolbox.py
 ```
 Two frames will open. The first is to fit the IVIM biexponential signal representation to NIFTI data according to specified fitting approach (similar to function `ivim_fitting.py`). The second is to compute required SNR to estimate parameters within 10% error margins for a given fitting approach and according to true IVIM values (similart to `ivim_simu_compute_required_snr.py`).
@@ -100,6 +101,12 @@ Plot the results with "error_plot" as output file name:
 ivim_simu_plot_error_nonoise.py -input two_step_fit_err_snr180/sim_results_*.pkl -oname error_plot
 ```
 
-
-
-
+### Calculate required SNR
+Calculate the minimum required SNR to estimate the product of parameters F and D* within 10% error margins for F varying from 1 to 30% (with 10 steps), D* varying from 3 to 35e-3 mm2/s (with 10 steps) and D equals 0.3 and 1.5e-3 mm2/s
+```
+ivim_simu_compute_required_snr.py -model one-step -ofolder required_snr_one_step_fit -bval 5,10,20,30,50,75,150,250,600,700,800 -condition FDstar -F 0.01:10:0.30 -Dstar 3.0e-3:10:35e-3 -D 0.3e-3,1.5e-3
+```
+A result file has been created to folder "required_snr_one_step_fit", let's plot the results now:
+```
+ivim_simu_plot_required_snr.py -input required_snr_one_step_fit/sim_results_*.pkl -oname required_snr_plot
+```
