@@ -1098,6 +1098,16 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # print citation
+    print '\n\n'
+    print '****************************** <3 Thank you for using our toolbox! <3 *********************************' \
+          '********************************* PLEASE CITE THE FOLLOWING PAPER *************************************' \
+          'Lévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent ' \
+          'Motion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic ' \
+          'Resonance in Medicine, 1902:334-357, 2019.' \
+          '*******************************************************************************************************'
+    print '\n\n'
+
     # run main
     main(dwi_fname=args.dwi_fname, bval_fname=args.bval_fname, mask_fname=args.mask_fname, model=args.model, ofolder=args.ofolder, multithreading=bool(int(args.multithreading)))
 

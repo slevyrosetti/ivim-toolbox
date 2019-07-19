@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env pythonw
 
 """Graphical User Interface for ivim-toolbox.
 
