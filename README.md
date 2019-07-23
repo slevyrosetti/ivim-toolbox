@@ -95,9 +95,9 @@ Compute estimation error of the one-step fit approach on perfect data with f<sub
 ```
 ivim_simu_compute_error_nonoise.py -model one-step -ofolder one_step_fit_err -bval 5,10,20,30,50,75,150,250,600,700,800
 ```
-Plot the results with "error_plot" as output file name:
+Plot the results in folder "one_step_fit_err" with "error_plot" as output file name:
 ```
-ivim_simu_plot_error_nonoise.py -input one_step_fit_err/sim_results_*.pkl -oname error_plot
+ivim_simu_plot_error_nonoise.py -input one_step_fit_err/sim_results_*.pkl -oname one_step_fit_err/error_plot
 ```
 
 ### Compute estimation error of fitting algorithm for a given SNR
@@ -105,9 +105,9 @@ Compute estimation error of the two-step fit approach on simulated data with SNR
 ```
 ivim_simu_compute_error_noise.py -model two-step -snr 180 -ofolder two_step_fit_err_snr180 -bval 5,10,20,30,50,75,150,250,600,700,800
 ```
-Plot the results with "error_plot" as output file name:
+Plot the results in folder "two_step_fit_err_snr180" with "error_plot" as output file name:
 ```
-ivim_simu_plot_error_nonoise.py -input two_step_fit_err_snr180/sim_results_*.pkl -oname error_plot
+ivim_simu_plot_error_nonoise.py -input two_step_fit_err_snr180/sim_results_*.pkl -oname two_step_fit_err_snr180/error_plot
 ```
 
 ### Calculate required SNR
