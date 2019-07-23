@@ -99,6 +99,12 @@ ivim_view_fits.py -i results_you_should_get/ivim_maps_rl/Fivim_map.nii.gz -plotd
 Two windows open, the first displays the f<sub>IVIM</sub> map with colormap "jet" and with values from 0 to 30%. Now if you click on a voxel, the second window will display the corresponding fit plot. The Terminal will display the voxel coordinates and its value (if fit was performed on this voxel).
 You can also zoom in using the :mag: icon.
 
+*Note: This script was largely inspired from the script `sct_viewer.py` of the [Spinal Cord Toolbox project](https://github.com/neuropoly/spinalcordtoolbox)*
+
+> *De Leener B, Levy S, Dupont SM, Fonov VS, Stikov N, Louis Collins D, Callot V, Cohen-Adad J., SCT: Spinal Cord Toolbox, an open-source software for processing spinal cord MRI data. Neuroimage 2017. [https://www.ncbi.nlm.nih.gov/pubmed/27720818](https://www.ncbi.nlm.nih.gov/pubmed/27720818)*
+
+*We would like to truly thank the Spinal Cord Toolbox team, and in particular Benjamin De Leener @benjamindeleener and Julien Cohen-Adad @jcohenadad, for developing this script!*
+
 ### Check performance of fitting algorithm on perfect data
 Compute estimation error of the one-step fit approach on perfect data with f<sub>IVIM</sub> values varying from 1 to 30%, D* values varying from 3 to 35e-3 mm<sup>2</sup>/s and D varying from 0.2 to 2.9e-3 mm<sup>2</sup>/s; a result file will be created in folder `one_step_fit_err`:
 ```
