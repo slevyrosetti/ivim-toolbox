@@ -122,7 +122,7 @@ ivim_simu_compute_error_noise.py -model two-step -snr 180 -ofolder two_step_fit_
 ```
 Plot the results in folder "two_step_fit_err_snr180" with "error_plot" as output file name:
 ```
-ivim_simu_plot_error_nonoise.py -input two_step_fit_err_snr180/sim_results_*.pkl -oname two_step_fit_err_snr180/error_plot
+ivim_simu_plot_error_noise.py -input two_step_fit_err_snr180/sim_results_*.pkl -oname two_step_fit_err_snr180/error_plot
 ```
 
 ### Calculate required SNR
