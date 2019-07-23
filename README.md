@@ -120,6 +120,8 @@ Compute estimation error of the two-step fit approach on simulated data with SNR
 ```
 ivim_simu_compute_error_noise.py -model two-step -snr 180 -ofolder two_step_fit_err_snr180 -bval 5,10,20,30,50,75,150,250,600,700,800
 ```
+*NB: If you run it on a "standard" machine (with around 4 cores), this command will take a VERY LONG time; we recommend to run it on a machine with at least 8 cores.*
+
 Plot the results in folder "two_step_fit_err_snr180" with "error_plot" as output file name:
 ```
 ivim_simu_plot_error_noise.py -input two_step_fit_err_snr180/sim_results_*.pkl -oname two_step_fit_err_snr180/error_plot
@@ -130,6 +132,8 @@ Calculate the minimum required SNR to estimate the product of parameters f<sub>I
 ```
 ivim_simu_compute_required_snr.py -model one-step -ofolder required_snr_one_step_fit -bval 5,10,20,30,50,75,150,250,600,700,800 -condition FDstar -F 0.01:10:0.30 -Dstar 3.0e-3:10:35e-3 -D 0.3e-3,1.5e-3
 ```
+*NB: If you run it on a "standard" machine (with around 4 cores), this command will take a VERY LONG time; we recommend to run it on a machine with at least 8 cores.*
+
 A result file has been created to folder "required_snr_one_step_fit", let's plot the results now:
 ```
 ivim_simu_plot_required_snr.py -input required_snr_one_step_fit/sim_results_*.pkl -oname required_snr_plot
