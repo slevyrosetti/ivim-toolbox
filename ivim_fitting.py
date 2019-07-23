@@ -476,7 +476,7 @@ def fit_2shots(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, verbose=1,
 
         fit_res.approach = '1shot_initD_v2'
         plot_dir = os.path.dirname(os.path.realpath(oplot_fname))
-        if plot_dir[:2] != '//':  # BECAREFUL: THIS WON'T WORK IF THE SELECTED OUTPUT FOLDER IS '/'
+        if plot_dir[:2] not in ['//','/']:  # BECAREFUL: SOME OUTPUT FOLDER NAME MIGHT NOT WORK HERE DEPENDING ON THE PLATFORM
             # plot and save fit
             ax = plot_fit(bvals, S, fit_res)
             xwide = np.linspace(0, np.max(bvals), np.max(bvals) * 2)
@@ -702,7 +702,7 @@ def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, ve
 
         fit_res.approach = '1shot_initD_v3'
         plot_dir = os.path.dirname(os.path.realpath(oplot_fname))
-        if plot_dir[:2] != '//':  # BECAREFUL: THIS WON'T WORK IF THE SELECTED OUTPUT FOLDER IS '/'
+        if plot_dir[:2] not in ['//','/']:  # BECAREFUL: SOME OUTPUT FOLDER NAME MIGHT NOT WORK HERE DEPENDING ON THE PLATFORM
             # plot and save fit
             ax = plot_fit(bvals, S, fit_res)
             xwide = np.linspace(0, np.max(bvals), np.max(bvals) * 2)
