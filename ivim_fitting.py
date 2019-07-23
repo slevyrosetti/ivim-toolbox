@@ -577,7 +577,7 @@ def fit_1shot_initD(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, bval_
         plot_dir = os.path.dirname(os.path.realpath(oplot_fname))
         # plot and save fit if ofolder selected
         fit_res.approach = '1shot_initD'
-        if len(plot_dir.split('/')) > 2:  # BECAREFUL: THIS WON'T WORK IF THE SELECTED OUTPUT FOLDER IS '/'
+        if plot_dir[:2] != '//':  # BECAREFUL: THIS WON'T WORK IF THE SELECTED OUTPUT FOLDER IS '/'
             ax = plot_fit(bvals, S, fit_res)
             xwide = np.linspace(0, np.max(bvals), np.max(bvals) * 2)
             ax.plot(xwide, -ivim_params["Dinit"] * xwide + np.log(ivim_params["S0(1-f)"]), color='orange',
@@ -633,7 +633,7 @@ def fit_1shot_initD(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, bval_
 
 def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, verbose=1, bval_thr=500):
     """
-    v3: adapted bounds for D and D* to adapt to real data and D NOT FIXED to the initial value resulting from the fit
+    v2: adapted bounds for D and D* to adapt to real data and D NOT FIXED to the initial value resulting from the fit
     of b-values >= bval_thr only.
     """
 
