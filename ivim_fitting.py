@@ -1100,12 +1100,12 @@ if __name__ == "__main__":
 
     # print citation
     print '\n\n'
-    print '****************************** <3 Thank you for using our toolbox! <3 *********************************' \
-          '********************************* PLEASE CITE THE FOLLOWING PAPER *************************************' \
-          'Lévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent ' \
-          'Motion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic ' \
-          'Resonance in Medicine, 1902:334-357, 2019.' \
-          '*******************************************************************************************************'
+    print '\n****************************** <3 Thank you for using our toolbox! <3 *********************************' \
+          '\n********************************* PLEASE CITE THE FOLLOWING PAPER *************************************' \
+          '\nLévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent ' \
+          '\nMotion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic ' \
+          '\nResonance in Medicine, 1902:334-357, 2019.' \
+          '\n*******************************************************************************************************'
     print '\n\n'
 
     # run main
