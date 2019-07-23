@@ -93,7 +93,7 @@ ivim_fitting.py -i dwi_rl.nii.gz -b bval_rl.txt -ma cord_seg_dilated.nii.gz -mo 
 
 A folder named `<creation date>_plots` has been created in the result folder (`ivim_maps_rl`). This folder includes plots of the fit performed at the previous step, and as we would like to inspect the data and how the fit algorithm performed on each voxel, we type:
 ```
-ivim_view_fits.py -i results_you_should_get/ivim_maps_rl/Fivim_map.nii.gz -plotdir results_you_should_get/ivim_maps_rl/190719170259_plots/ -param cmap=jet,clim=0\;0.3
+ivim_view_fits.py -i ivim_maps_rl/Fivim_map.nii.gz -plotdir ivim_maps_rl/190719170259_plots/ -param cmap=jet,clim=0\;0.3
 ```
 
 Two windows open, the first displays the f<sub>IVIM</sub> map with colormap "jet" and with values from 0 to 30%. Now if you click on a voxel, the second window will display the corresponding fit plot. The Terminal will display the voxel coordinates and its value (if fit was performed on this voxel).
