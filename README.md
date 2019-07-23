@@ -1,6 +1,6 @@
 #
 
-#  :bulb: :flashlight: ivim-toolbox :wrench: :mag: </font>
+#  :mag_right: :bulb: ivim-toolbox :flashlight: :wrench: </font>
 
 # 
 
@@ -60,6 +60,7 @@ Those data are the single-subject data presented in Figure 6 of the paper *Lévy
 
 The tools available are:
   - `ivim_fitting.py`: fit IVIM biexponential signal representation to NIFTI data according to specified fitting approach
+  - `ivim_view_fits.py`: display an IVIM parameter map and enable user to inspect fitting by clicking on any voxel and display corresponding fit plot
   - `ivim_simu_compute_error_nonoise.py`: compute error of a given fitting approach according to true IVIM values
   - `ivim_simu_plot_error_nonoise.py`: plot results from previous tool
   - `ivim_simu_compute_error_noise.py`: compute error of a given fitting approach according to true IVIM values for a given SNR (Monte Carlo simulations)
@@ -80,15 +81,23 @@ ivim_toolbox.py
 Two frames will open. The first is to fit the IVIM biexponential signal representation to NIFTI data according to specified fitting approach (similar to function `ivim_fitting.py`). The second is to compute required SNR to estimate parameters within 10% error margins for a given fitting approach and according to true IVIM values (similart to `ivim_simu_compute_required_snr.py`).
 
 ### Fit IVIM data
-Go to the folder where the data are stored
+Go to the folder where the data are stored:
 ```
 cd test_data
 ```
 
-Fit the IVIM data acquired with diffusion encoding in the Right-Left direction, voxel-by-voxel for voxels within the mask only, using the one-step fitting approach and running on all threads available to speed up the calculation. IVIM maps will be output in a folder named `ivim_maps_rl`
+Fit the IVIM data acquired with diffusion encoding in the Right-Left direction, voxel-by-voxel for voxels within the mask only, using the one-step fitting approach and running on all threads available to speed up the calculation. IVIM maps will be output in a folder named `ivim_maps_rl`:
 ```
 ivim_fitting.py -i dwi_rl.nii.gz -b bval_rl.txt -ma cord_seg_dilated.nii.gz -mo one-step -o ivim_maps_rl -mt 1
 ```
+
+A folder named `<creation date>_plots` has been created in the result folder (`ivim_maps_rl`). This folder includes plots of the fit performed at the previous step, and as we would like to inspect the data and how the fit algorithm performed on each voxel, we type:
+```
+ivim_view_fits.py -i results_you_should_get/ivim_maps_rl/Fivim_map.nii.gz -plotdir results_you_should_get/ivim_maps_rl/190719170259_plots/ -param cmap=jet,clim=0\;0.3
+```
+
+Two windows open, the first displays the f<sub>IVIM</sub> map with colormap "jet" and with values from 0 to 30%. Now if you click on a voxel, the second window will display the corresponding fit plot. The Terminal will display the voxel coordinates and its value (if fit was performed on this voxel).
+You can also zoom in using the :mag: icon.
 
 ### Check performance of fitting algorithm on perfect data
 Compute estimation error of the one-step fit approach on perfect data with f<sub>IVIM</sub> values varying from 1 to 30%, D* values varying from 3 to 35e-3 mm<sup>2</sup>/s and D varying from 0.2 to 2.9e-3 mm<sup>2</sup>/s; a result file will be created in folder `one_step_fit_err`:
