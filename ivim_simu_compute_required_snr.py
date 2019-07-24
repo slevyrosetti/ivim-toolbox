@@ -28,7 +28,7 @@ def main(model, ofolder, bvals, condition, snr_init, F_range, Dstar_range, D_ran
     ivim_fitting.approach = model
     bvals = np.array(map(int, bvals.split(',')))
     s0 = 600.
-    n_noise_simu = 10
+    n_noise_simu = 1000
 
     # measure duration
     start_time = time.time()
