@@ -8,7 +8,7 @@
 This toolbox is dedicated to model fitting and simulation for Intra-Voxel Incoherent Motion (IVIM) MR imaging. It gathers tools, on the one hand, to fit IVIM bi-exponential signal representation voxel-wise and, on the other hand, to run Monte Carlo simulations in order to assess the estimation error on parameters as well as to calculate the minimum required SNR to get accurate estimation.</p>
 
 We thank you for choosing our toolbox! :heart: According to the MIT licence, please cite the following article:
-> **Lévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic Resonance in Medicine, 1902:334-357, 2019.**
+> **Levy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7T to quantify human spinal cord microperfusion: pitfalls and promises, *Proceedings of the 27th Annual Meeting of the International Society for Magnetic Resonance in Medicine*. Montreal, Quebec, Canada; 2019:0301.**
 
 # Operating systems
 This toolbox is only based on Python. Therefore, it should run on any OS (Mac OSX, Linux, Windows). However, it has been developed and extensively tested on Mac OSX. Some light errors might pop up when using on Linux or Windows but **feel free to open an issue [here](https://github.com/slevyrosetti/ivim-toolbox/issues) or to contact me at simon.levy@mines-ales.org if you face any problem.**
@@ -56,7 +56,7 @@ You will find in the directory `test_data` example data that you can use to test
  - `cord_seg_dilated.nii.gz` is a large mask including the cord (to use for voxel-wise fitting)
  - directory `results_you_should_get` includes the results you should get using the example commands detailed below
 
-Those data are the single-subject data presented in Figure 6 of the paper *Lévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic Resonance in Medicine, 1902:334-357, 2019.*
+Those data are the single-subject data presented in Figure 4 of the paper *Levy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7T to quantify human spinal cord microperfusion: pitfalls and promises, Proceedings of the 27th Annual Meeting of the International Society for Magnetic Resonance in Medicine. Montreal, Quebec, Canada; 2019:0301.*
 
 The tools available are:
   - `ivim_fitting.py`: fit IVIM biexponential signal representation to NIFTI data according to specified fitting approach
@@ -132,7 +132,7 @@ Calculate the minimum required SNR to estimate the product of parameters f<sub>I
 ```
 ivim_simu_compute_required_snr.py -model one-step -ofolder required_snr_one_step_fit -bval 5,10,20,30,50,75,150,250,600,700,800 -condition FDstar -F 0.01:10:0.30 -Dstar 3.0e-3:10:35e-3 -D 0.3e-3,1.5e-3
 ```
-*NB: If you run it on a "standard" machine (with around 4 cores), this command will take a VERY LONG time; we recommend to run it on a machine with at least 8 cores.*
+*NB: This command took **26h30min** on a linux machine with **40 Intel(R) Xeon(R) CPUs E5-2630 v4 @ 2.20GHz** so you might want to consider the specifications of the machine you want to use to run this command.*
 
 A result file has been created to folder "required_snr_one_step_fit", let's plot the results now:
 ```
