@@ -136,5 +136,5 @@ ivim_simu_compute_required_snr.py -model one-step -ofolder required_snr_one_step
 
 A result file has been created to folder "required_snr_one_step_fit", let's plot the results now:
 ```
-ivim_simu_plot_required_snr.py -input required_snr_one_step_fit/sim_results_*.pkl -oname required_snr_plot
+ivim_simu_plot_required_snr.py -input required_snr_one_step_fit/sim_results_*.pkl -oname required_snr_one_step_fit/required_snr_plot
 ```
