@@ -8,7 +8,7 @@
 This toolbox is dedicated to model fitting and simulation for Intra-Voxel Incoherent Motion (IVIM) MR imaging. It gathers tools, on the one hand, to fit IVIM bi-exponential signal representation voxel-wise and, on the other hand, to run Monte Carlo simulations in order to assess the estimation error on parameters as well as to calculate the minimum required SNR to get accurate estimation.</p>
 
 We thank you for choosing our toolbox! :heart: According to the MIT licence, please cite the following article:
-> **Levy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7T to quantify human spinal cord microperfusion: pitfalls and promises, *Proceedings of the 27th Annual Meeting of the International Society for Magnetic Resonance in Medicine*. Montreal, Quebec, Canada; 2019:0301.**
+> **Lévy S, Rapacchi S, Massire A, et al. Intravoxel Incoherent Motion at 7 Tesla to quantify human spinal cord perfusion: limitations and promises, *Magn Reson Med*. 2020;00:1–20. [https://doi.org/10.1002/mrm.28195](https://doi.org/10.1002/mrm.28195)**
 
 # Operating systems
 This toolbox is only based on Python. Therefore, it should run on any OS (Mac OSX, Linux, Windows). However, it has been developed and extensively tested on Mac OSX. Some light errors might pop up when using on Linux or Windows but **feel free to open an issue [here](https://github.com/slevyrosetti/ivim-toolbox/issues) or to contact me at simon.levy@mines-ales.org if you face any problem.**
