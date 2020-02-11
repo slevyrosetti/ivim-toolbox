@@ -11,7 +11,7 @@ Created on Mon Jul  8 17:38:41 2019
 
 import ivim_fitting
 import numpy as np
-import cPickle as pickle
+import _pickle as pickle
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import argparse
@@ -26,9 +26,9 @@ def main(model, ofolder, bvals):
     start_time = time.strftime("%y%m%d%H%M%S")
     if not os.path.exists(ofolder):
         os.mkdir(ofolder)
-        print "\nDirectory", ofolder, "created.\n"
+        print("\nDirectory", ofolder, "created.\n")
     else:
-        print "\nDirectory", ofolder, "already exists.\n"
+        print("\nDirectory", ofolder, "already exists.\n")
 
     # set fit parameters
     ivim_fitting.approach = model

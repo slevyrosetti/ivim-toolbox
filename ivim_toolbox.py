@@ -63,23 +63,23 @@ class FrameFitData(wx.Frame):
 
     def ClickedOnRun(self, event):
 
-        print "\n\n\n======= PARAMETERS ======="
-        print "4D diffusion-weighted file: "+self.paths[0]
-        print "B-value file: "+self.paths[1]
-        print "Mask file: "+self.paths[2]
+        print("\n\n\n======= PARAMETERS =======")
+        print("4D diffusion-weighted file: "+self.paths[0])
+        print("B-value file: "+self.paths[1])
+        print("Mask file: "+self.paths[2])
 
         model_chosen_index = self.ModelChoice.GetSelection()
         if model_chosen_index == -1:
             return
         model_chosen = self.ModelChoice.GetString(model_chosen_index)
 
-        print "Fit approach: "+model_chosen
+        print("Fit approach: "+model_chosen)
 
-        print "Output folder: "+self.paths[3]
+        print("Output folder: "+self.paths[3])
 
         MTcheckbox_value = self.MTCheckBox.GetValue()
-        print "Multi-threading: "+str(MTcheckbox_value)
-        print "==========================\n\n"
+        print("Multi-threading: "+str(MTcheckbox_value))
+        print("==========================\n\n")
 
         # run fit
         # ivim_fitting.main(dwi_fname=self.paths[0], bval_fname=self.paths[1], mask_fname=self.paths[2], model=model_chosen, ofolder=self.paths[3], multithreading=MTcheckbox_value)
@@ -196,14 +196,14 @@ class FrameRequiredSNR(wx.Frame):
             return
         selected_approach = self.ApproachChoice.GetString(selected_approach_idx)
 
-        print "\n\n\n======= PARAMETERS ======="
-        print "Fit approach: "+selected_approach
-        print "Output folder: "+self.paths[0]
-        print "B-value distribution: "+self.bval_field.GetValue()
-        print "F true values: "+self.F_field.GetValue()
-        print "D* true values: "+self.Dstar_field.GetValue()
-        print "D true values: "+self.D_field.GetValue()
-        print "==========================\n\n"
+        print("\n\n\n======= PARAMETERS =======")
+        print("Fit approach: "+selected_approach)
+        print("Output folder: "+self.paths[0])
+        print("B-value distribution: "+self.bval_field.GetValue())
+        print("F true values: "+self.F_field.GetValue())
+        print("D* true values: "+self.Dstar_field.GetValue())
+        print("D true values: "+self.D_field.GetValue())
+        print("==========================\n\n")
 
         # run SNR calculation
         # ivim_simu_compute_required_snr.main(model=selected_approach, ofolder=self.paths[0], bvals=self.bval_field.GetValue(), condition='FDstar', snr_init=1500., F_range=self.F_field.GetValue(), Dstar_range=self.Dstar_field.GetValue(), D_range=self.D_field.GetValue())

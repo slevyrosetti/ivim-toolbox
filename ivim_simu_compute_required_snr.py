@@ -12,7 +12,7 @@ Created on Mon Jul  8 18:32:11 2019
 
 import ivim_fitting
 import numpy as np
-import cPickle as pickle
+import _pickle as pickle
 import math
 import time
 import argparse
@@ -37,9 +37,9 @@ def main(model, ofolder, bvals, condition, snr_init, F_range, Dstar_range, D_ran
     start_time_str = time.strftime("%y%m%d%H%M%S")
     if not os.path.exists(ofolder):
         os.mkdir(ofolder)
-        print "\nDirectory", ofolder, "created.\n"
+        print("\nDirectory", ofolder, "created.\n")
     else:
-        print "\nDirectory", ofolder, "already exists.\n"
+        print("\nDirectory", ofolder, "already exists.\n")
 
     # for each parameter combination, find required SNR
     minSNR = np.zeros((len(F_range), len(Dstar_range), len(D_range)))

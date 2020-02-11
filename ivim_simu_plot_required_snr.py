@@ -11,7 +11,7 @@ Created on Mon Jul  8 19:21:50 2019
 """
 
 import numpy as np
-import cPickle as pickle
+import _pickle as pickle
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from matplotlib.ticker import LogLocator
@@ -25,8 +25,8 @@ def main(ifname, ofname):
     # load data
     minSNR, mean_err_for_minSNR, minSNR_diverging, true_params_values, F_range, Dstar_range, D_range, n_noise_simu = pickle.load(open(ifname, "rb"))
     n_sample = len(F_range)
-    print minSNR[0,0,:]
-    print np.sum(minSNR_diverging)
+    print(minSNR[0,0,:])
+    print(np.sum(minSNR_diverging))
 
     # convert dictionaries array to array
     # true_params_values = np.zeros((n_sample, n_sample, n_sample), dtype=dict)  # true values for F, Dstar, D
