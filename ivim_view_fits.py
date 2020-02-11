@@ -566,14 +566,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # print citation
-    print '\n\n'
-    print '\n****************************** <3 Thank you for using our toolbox! <3 *********************************' \
-          '\n********************************* PLEASE CITE THE FOLLOWING PAPER *************************************' \
-          '\nLévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent ' \
-          '\nMotion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic ' \
-          '\nResonance in Medicine, 1902:334-357, 2019.' \
-          '\n*******************************************************************************************************'
-    print '\n\n'
+    print('\n\n'
+          '\n****************************** <3 Thank you for using our toolbox! <3 ***********************************'
+          '\n********************************* PLEASE CITE THE FOLLOWING PAPER ***************************************'
+          '\nLévy S, Rapacchi S, Massire A, et al. Intravoxel Incoherent Motion at 7 Tesla to quantify human spinal '
+          '\ncord perfusion: limitations and promises. Magn Reson Med. 2020;00:1-20. https://doi.org/10.1002/mrm.28195'
+          '\n*********************************************************************************************************'
+          '\n\n')
 
     # load images
     list_images = [nib.load(fname) for fname in [args.fname_image]]

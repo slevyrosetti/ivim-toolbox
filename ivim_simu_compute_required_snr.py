@@ -284,6 +284,15 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # print citation
+    print('\n\n'
+          '\n****************************** <3 Thank you for using our toolbox! <3 ***********************************'
+          '\n********************************* PLEASE CITE THE FOLLOWING PAPER ***************************************'
+          '\nLévy S, Rapacchi S, Massire A, et al. Intravoxel Incoherent Motion at 7 Tesla to quantify human spinal '
+          '\ncord perfusion: limitations and promises. Magn Reson Med. 2020;00:1-20. https://doi.org/10.1002/mrm.28195'
+          '\n*********************************************************************************************************'
+          '\n\n')
+
     # run main
     main(model=args.model, ofolder=args.ofolder, bvals=args.bvals, condition=args.condition, snr_init=args.snr_init, F_range=parse_true_value_range(args.F_range), Dstar_range=parse_true_value_range(args.Dstar_range), D_range=parse_true_value_range(args.D_range))
 
