@@ -11,7 +11,7 @@ Created on Mon Jul  8 16:25:15 2019
 """
 
 import numpy as np
-import cPickle as pickle
+import _pickle as pickle
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from matplotlib.ticker import LogLocator

@@ -41,7 +41,7 @@ class IVIMfit:
         if self.save_plots:
             # create dedicated plot directory
             self.plot_dir = "%s_plots" % time.strftime("%y%m%d%H%M%S")
-            os.mkdir(self.ofit_dir + "/" + self.plot_dir)
+            os.makedirs(self.ofit_dir + "/" + self.plot_dir)
 
         n_vox_to_fit = self.voxels_values.shape[0]
         if verbose:
@@ -98,9 +98,9 @@ def main(dwi_fname, bval_fname, mask_fname, model, ofolder, multithreading):
     # initialize outputs
     if not os.path.exists(ofolder):
         os.mkdir(ofolder)
-        print "\nDirectory", ofolder, "created.\n"
+        print("\nDirectory", ofolder, "created.\n")
     else:
-        print "\nDirectory", ofolder, "already exists.\n"
+        print("\nDirectory", ofolder, "already exists.\n")
 
     # prepare IVIM fit object
     ivim_fit = IVIMfit(bvals=bvals,
@@ -476,7 +476,7 @@ def fit_2shots(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, verbose=1,
 
         fit_res.approach = '1shot_initD_v2'
         plot_dir = os.path.dirname(os.path.realpath(oplot_fname))
-        if plot_dir[:2] not in ['//','/']:  # BECAREFUL: SOME OUTPUT FOLDER NAME MIGHT NOT WORK HERE DEPENDING ON THE PLATFORM
+        if plot_dir[:2] not in ['//', '/']:  # BECAREFUL: SOME OUTPUT FOLDER NAME MIGHT NOT WORK HERE DEPENDING ON THE PLATFORM
             # plot and save fit
             ax = plot_fit(bvals, S, fit_res)
             xwide = np.linspace(0, np.max(bvals), np.max(bvals) * 2)
@@ -516,7 +516,7 @@ def fit_2shots(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, verbose=1,
             print(str(100. * n_voxel_done / n_vox_to_fit) + '% of voxels done.')
 
 
-    except ValueError, err_detail:
+    except ValueError as err_detail:
         print('/!\\/!\\/!\\ VALUE ERROR /!\\/!\\/!\\: ' + str(err_detail))
         print('--> ignoring voxel (' + oplot_fname.split('/')[-1].split(',')[0] + ')')
         ivim_params["S0(1-f)"] = 0
@@ -615,7 +615,7 @@ def fit_1shot_initD(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, bval_
         print(str(100. * n_voxel_done / n_vox_to_fit) + '% of voxels done.')
 
 
-    except ValueError, err_detail:
+    except ValueError as err_detail:
         print('/!\\/!\\/!\\ VALUE ERROR /!\\/!\\/!\\: ' + str(err_detail))
         print('--> ignoring voxel (' + oplot_fname.split('/')[-1].split(',')[0] + ')')
         ivim_params["S0(1-f)"] = 0
@@ -698,11 +698,12 @@ def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, ve
         ivim_params["D"] = fit_res.params["D"].value
         ivim_params["Dstar"] = fit_res.params["Dstar"].value
         ivim_params["AIC"] = fit_res.aic
+        ivim_params["AICc"] = fit_res.aic + (2*4**2 + 2*4) / (len(bvals) - 4 - 1)  # corrected AIC to take the small sample size into accout: AICc = AIC + (2k^2 + 2k) / n - k -1 where k is the number of parameters and n the sample size
         ivim_params["R2"] = get_r2(fit_res)
 
         fit_res.approach = '1shot_initD_v3'
         plot_dir = os.path.dirname(os.path.realpath(oplot_fname))
-        if plot_dir[:2] not in ['//','/']:  # BECAREFUL: SOME OUTPUT FOLDER NAME MIGHT NOT WORK HERE DEPENDING ON THE PLATFORM
+        if plot_dir[:2] not in ['//', '/']:  # BECAREFUL: SOME OUTPUT FOLDER NAME MIGHT NOT WORK HERE DEPENDING ON THE PLATFORM
             # plot and save fit
             ax = plot_fit(bvals, S, fit_res)
             xwide = np.linspace(0, np.max(bvals), np.max(bvals) * 2)
@@ -728,7 +729,7 @@ def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, ve
             # save figure and display progress by counting number of plots in directory
             plt.savefig(oplot_fname)
             plt.close()
-            n_voxel_done = len([plot for plot in os.walk(plot_dir).next()[2] if plot[-4:] == ".png"])
+            n_voxel_done = len([plot for plot in next(os.walk(plot_dir))[2] if plot[-4:] == ".png"])
 
         else:
             plot_filename = oplot_fname.split('/')[-1].split('.')[0]
@@ -741,7 +742,7 @@ def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, ve
             print(str(100. * n_voxel_done / n_vox_to_fit) + '% of voxels done.')
 
 
-    except ValueError, err_detail:
+    except ValueError as err_detail:
         print('/!\\/!\\/!\\ VALUE ERROR /!\\/!\\/!\\: ' + str(err_detail))
         print('--> ignoring voxel (' + oplot_fname.split('/')[-1].split(',')[0] + ')')
         ivim_params["S0(1-f)"] = 0
@@ -754,7 +755,7 @@ def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, ve
         ivim_params["R2"] = 0
         ivim_params["exception"] = 1
 
-    except IndexError, err_detail:
+    except IndexError as err_detail:
         print('/!\\/!\\/!\\ INDEX ERROR /!\\/!\\/!\\: ' + str(
             err_detail) + '\nMIGHT BE DUE TO numpy.polyfit UNDER UBUNTU 16 WHICH RETURNS ONLY ONE COEFFICIENT INSTEAD OF TWO UNDER MACOSX...')
         print('--> ignoring voxel (' + oplot_fname.split('/')[-1].split(',')[0] + ')')
@@ -829,7 +830,7 @@ def fit_1shot_initD_noise(S, bvals, oplot_fname, n_vox_to_fit=1, bval_thr=500):
         n_voxel_done = len([plot for plot in os.walk(plot_dir).next()[2] if plot[-4:] == ".png"])
         print(str(100. * n_voxel_done / n_vox_to_fit) + '% of voxels done.')
 
-    except ValueError, err_detail:
+    except ValueError as err_detail:
         print('/!\\/!\\/!\\ VALUE ERROR /!\\/!\\/!\\: ' + str(err_detail))
         print('--> ignoring voxel (' + oplot_fname.split('/')[-1].split(',')[0] + ')')
         ivim_params["S0"] = 0
@@ -956,7 +957,7 @@ def fit_combine_2shots_1shot_lemke(S, bvals, oplot_fname, n_vox_to_fit=1, bval_t
         plt.close()
         print(str(100. * n_voxel_done / n_vox_to_fit) + '% of voxels done.')
 
-    except ValueError, err_detail:
+    except ValueError as err_detail:
         print('/!\\/!\\/!\\ VALUE ERROR /!\\/!\\/!\\: ' + str(err_detail))
         print('--> ignoring voxel (' + oplot_fname.split('/')[-1].split(',')[0] + ')')
         ivim_params["S0(1-f)"] = 0
@@ -1036,7 +1037,7 @@ def fit_FivimXDstar(S, bvals, oplot_fname, n_vox_to_fit=1, bval_thr=500):
         n_voxel_done = len([plot for plot in os.walk(plot_dir).next()[2] if plot[-4:] == ".png"])
         print(str(100. * n_voxel_done / n_vox_to_fit) + '% of voxels done.')
 
-    except ValueError, err_detail:
+    except ValueError as err_detail:
         print('/!\\/!\\/!\\ VALUE ERROR /!\\/!\\/!\\: ' + str(err_detail))
         print('--> ignoring voxel (' + oplot_fname.split('/')[-1].split(',')[0] + ')')
         ivim_params["S0"] = 0
@@ -1099,14 +1100,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # print citation
-    print '\n\n'
-    print '\n****************************** <3 Thank you for using our toolbox! <3 *********************************' \
-          '\n********************************* PLEASE CITE THE FOLLOWING PAPER *************************************' \
-          '\nLévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent ' \
-          '\nMotion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic ' \
-          '\nResonance in Medicine, 1902:334-357, 2019.' \
+    print('\n\n'
+          '\n****************************** <3 Thank you for using our toolbox! <3 *********************************'
+          '\n********************************* PLEASE CITE THE FOLLOWING PAPER *************************************'
+          '\nLévy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent '
+          '\nMotion at 7 Tesla to quantify human spinal cord microperfusion: limitations and promises, Magnetic '
+          '\nResonance in Medicine, 1902:334-357, 2019.'
           '\n*******************************************************************************************************'
-    print '\n\n'
+          '\n\n')
 
     # run main
     main(dwi_fname=args.dwi_fname, bval_fname=args.bval_fname, mask_fname=args.mask_fname, model=args.model, ofolder=args.ofolder, multithreading=bool(int(args.multithreading)))
