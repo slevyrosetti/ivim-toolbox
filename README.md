@@ -10,9 +10,21 @@ This toolbox is dedicated to model fitting and simulation for Intra-Voxel Incohe
 We thank you for choosing our toolbox! :heart: According to the MIT licence, please cite the following article:
 > **Lévy S, Rapacchi S, Massire A, et al. Intravoxel Incoherent Motion at 7 Tesla to quantify human spinal cord perfusion: limitations and promises, *Magn Reson Med*. 2020;00:1–20. [https://doi.org/10.1002/mrm.28195](https://doi.org/10.1002/mrm.28195)**
 
+---
+
+# Table of Contents
+
+- [Operating systems](#operating-systems)
+- [Installation](#installation)
+- [Get started](#get-started)
+- [Funding](#funding)
+
+---
+
 # Operating systems
 This toolbox is only based on Python. Therefore, it should run on any OS (Mac OSX, Linux, Windows). However, it has been developed and extensively tested on Mac OSX. Some light errors might pop up when using on Linux or Windows but **feel free to open an issue [here](https://github.com/slevyrosetti/ivim-toolbox/issues) or to contact me at simon.levy@mines-ales.org if you face any problem.**
 
+---
 # Installation
 Only requirements are:
   1. Python
@@ -47,6 +59,8 @@ If you did not install Python through the Conda package, you can install those m
 Finally, [download](https://github.com/slevyrosetti/ivim-toolbox/archive/master.zip) this repository. Add the path to your `.bash_profile` (or `.bashrc` as preferred). To do so, type the following command in a Terminal:
 
 `echo 'export PATH=<path to ivim-toolbox directory>:$PATH' >>~/.bash_profile` where `<path to ivim-toolbox directory>` has to be replaced by the path to the ivim-toolbox directory (e.g. `/Users/slevyrosetti/ivim-toolbox`).
+
+---
 
 # Get started
 You will find in the directory `test_data` example data that you can use to test your installation:
@@ -139,5 +153,7 @@ A result file has been created to folder "required_snr_one_step_fit", let's plot
 ivim_simu_plot_required_snr.py -input required_snr_one_step_fit/sim_results_*.pkl -oname required_snr_one_step_fit/required_snr_plot
 ```
 
+---
+# Funding
 
 *This work was performed within the [CRMBM-CEMEREM](http://crmbm.univ-amu.fr/) (UMR 7339, CNRS / Aix-Marseille University), which is a laboratory member of France Life Imaging network (grant #ANR-11-INBS-0006). The project received funding from the European Union’s Horizon 2020 research and innovation program (Marie Skłodowska-Curie grant agreement #713750), the Regional Council of Provence-Alpes-Côte d’Azur, A\*MIDEX (#ANR-11-IDEX-0001-02, #7T-AMI-ANR-11-EQPX-0001, #A\*MIDEX-EI-13-07-130115-08.38-7T-AMISTART) and CNRS (Centre National de la Recherche Scientifique).*
