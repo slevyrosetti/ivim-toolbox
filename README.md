@@ -16,6 +16,8 @@ We thank you for choosing our toolbox! :heart: According to the MIT licence, ple
 
 - [Operating systems](#operating-systems)
 - [Installation](#installation)
+- [Data description](#data-description)
+- [Code description](#code-description)
 - [Get started](#get-started)
 - [Funding](#funding)
 
@@ -62,7 +64,8 @@ Finally, [download](https://github.com/slevyrosetti/ivim-toolbox/archive/master.
 
 ---
 
-# Get started
+# Data description
+
 You will find in the directory `test_data` example data that you can use to test your installation:
  - `dwi_rl.nii.gz` are human spinal cord IVIM data acquired at 7T with diffusion encoding in the Right-Left direction and with b-values as defined in `bval_rl.txt`
  - `dwi_ap.nii.gz` are human spinal cord IVIM data acquired at 7T with diffusion encoding in the Anterior-Posterior direction and with b-values as defined in `bval_rl.txt`
@@ -71,6 +74,10 @@ You will find in the directory `test_data` example data that you can use to test
  - directory `results_you_should_get` includes the results you should get using the example commands detailed below
 
 Those data are the single-subject data presented in Figure 4 of the paper *Levy S., Rapacchi S., Massire A., Troalen T., Feiweier T., Guye M., Callot V., Intra-Voxel Incoherent Motion at 7T to quantify human spinal cord microperfusion: pitfalls and promises, Proceedings of the 27th Annual Meeting of the International Society for Magnetic Resonance in Medicine. Montreal, Quebec, Canada; 2019:0301.*
+
+---
+
+# Code description
 
 The tools available are:
   - `ivim_fitting.py`: fit IVIM biexponential signal representation to NIFTI data according to specified fitting approach
@@ -87,14 +94,18 @@ All tools can be used from the Terminal and some of the them can be run through 
 
 **To display all available options for any tool, type `<name of tool>.py --help` in a Terminal (e.g. `ivim_fitting.py --help`).**
 
-## Example commands (to be run in a Terminal window)
-### Open graphical user interface
+---
+# Get started
+
+In this section, we will give examples of the commands that can be run from a Terminal window to show how to use the toolbox for your IVIM data.
+
+## Open graphical user interface
 ```
 ivim_toolbox.py
 ```
 Two frames will open. The first is to fit the IVIM biexponential signal representation to NIFTI data according to specified fitting approach (similar to function `ivim_fitting.py`). The second is to compute required SNR to estimate parameters within 10% error margins for a given fitting approach and according to true IVIM values (similart to `ivim_simu_compute_required_snr.py`).
 
-### Fit IVIM data
+## Fit IVIM data
 Go to the folder where the data are stored:
 ```
 cd test_data
@@ -119,7 +130,7 @@ You can also zoom in using the :mag: icon.
 
 *We would like to truly thank the Spinal Cord Toolbox team, and in particular Benjamin De Leener @benjamindeleener and Julien Cohen-Adad @jcohenadad, for developing this script!*
 
-### Check performance of fitting algorithm on perfect data
+## Check performance of fitting algorithm on perfect data
 Compute estimation error of the one-step fit approach on perfect data with f<sub>IVIM</sub> values varying from 1 to 30%, D* values varying from 3 to 35e-3 mm<sup>2</sup>/s and D varying from 0.2 to 2.9e-3 mm<sup>2</sup>/s; a result file will be created in folder `one_step_fit_err`:
 ```
 ivim_simu_compute_error_nonoise.py -model one-step -ofolder one_step_fit_err -bval 5,10,20,30,50,75,150,250,600,700,800
@@ -129,7 +140,7 @@ Plot the results in folder "one_step_fit_err" with "error_plot" as output file n
 ivim_simu_plot_error_nonoise.py -input one_step_fit_err/sim_results_*.pkl -oname one_step_fit_err/error_plot
 ```
 
-### Compute estimation error of fitting algorithm for a given SNR
+## Compute estimation error of fitting algorithm for a given SNR
 Compute estimation error of the two-step fit approach on simulated data with SNR=180 (Monte-Carlo simulations) with IVIM true values varying in the same range as the previous one; similarly, a result file will be created in folder `two_step_fit_err_snr180`:
 ```
 ivim_simu_compute_error_noise.py -model two-step -snr 180 -ofolder two_step_fit_err_snr180 -bval 5,10,20,30,50,75,150,250,600,700,800
@@ -141,7 +152,7 @@ Plot the results in folder "two_step_fit_err_snr180" with "error_plot" as output
 ivim_simu_plot_error_noise.py -input two_step_fit_err_snr180/sim_results_*.pkl -oname two_step_fit_err_snr180/error_plot
 ```
 
-### Calculate required SNR
+## Calculate required SNR
 Calculate the minimum required SNR to estimate the product of parameters f<sub>IVIM</sub> and D* within 10% error margins for f<sub>IVIM</sub> varying from 1 to 30% (with 10 steps), D* varying from 3 to 35e-3 mm<sup>2</sup>/s (with 10 steps) and D equals 0.3 and 1.5e-3 mm<sup>2</sup>/s
 ```
 ivim_simu_compute_required_snr.py -model one-step -ofolder required_snr_one_step_fit -bval 5,10,20,30,50,75,150,250,600,700,800 -condition FDstar -F 0.01:10:0.30 -Dstar 3.0e-3:10:35e-3 -D 0.3e-3,1.5e-3
