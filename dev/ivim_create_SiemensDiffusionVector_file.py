@@ -5,10 +5,20 @@ import os
 from datetime import datetime
 import numpy as np
 import sys
+import warnings
 
 
-def main(bvalsRequested, nbRep, unitVectDir, oFname):
+def main(bvalsRequested, nbRep, unitVectDir, oFname, order):
     """Main."""
+
+    # display command
+    cmd = ' '.join([os.path.basename(sys.argv[0])]+sys.argv[1:])
+    print("Running:\n"+cmd+"\n")
+
+    # check if the order requested is compatible with the
+    if order == "rep" and not np.all(nbRep == nbRep[0]):
+        warnings.warn("The number of repetitions per b-value is different across b-values --> the order of the distribution is changed to \"bval\".")
+        order = "bval"
 
     # if only one number of repetitions requested, apply the same to each b-values
     if len(nbRep) == 1:
@@ -24,11 +34,12 @@ def main(bvalsRequested, nbRep, unitVectDir, oFname):
                 '# Author: '+username+'\n'
                 '# Date: '+datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)")+'\n'
                 '# Generated with command:\n'
-                '# '+' '.join([os.path.basename(sys.argv[0])]+sys.argv[1:])+'\n'              '# \n'
+                '# '+cmd+'\n'              '# \n'
                 '# If run with b = '+str(max(bvalsRequested))+', obtained b-values will be (s/mm2):\n'
                 '# '+str(bvalsRequested)+'\n'
                 '# Number of b-values: '+str(len(bvalsRequested))+'\n'
                 '# Number of repetitions: '+str(nbRep)+'\n'
+                '# Order of distribution: '+order+'\n'                         
                 '# Direction: '+str(unitVectDir)+'\n'
                 '# Do not alternate positive and negative diffusion encoding directions\n'
                 '#-------------------------------------------------------------------------------\n\n')
@@ -48,13 +59,29 @@ def main(bvalsRequested, nbRep, unitVectDir, oFname):
 
     # write vectors in file
     bvalsWritten = []  # matrix to record written b-values (for debugging)
-    for i_vect in range(len(bvalsRequested)):
-        for i_rep in range(nbRep[i_vect]):
+    if order == "bval":
+        for i_vect in range(len(bvalsRequested)):
+            for i_rep in range(nbRep[i_vect]):
 
-            sign = 1
-            volume_nb = np.sum(nbRep[0:i_vect])+i_rep
-            fileObj.write('Vector[{:d}] = ( {:1.8f}, {:1.8f}, {:1.8f} )\n'.format(volume_nb, sign*diff_vectors[i_vect, 0], sign*diff_vectors[i_vect, 1], sign*diff_vectors[i_vect, 2]))
-            bvalsWritten.append(sign*bvalsRequested[i_vect])  # record written b-value for debugging
+                sign = 1
+                volume_nb = np.sum(nbRep[0:i_vect])+i_rep
+                fileObj.write('Vector[{:d}] = ( {:1.8f}, {:1.8f}, {:1.8f} )\n'.format(volume_nb, sign*diff_vectors[i_vect, 0], sign*diff_vectors[i_vect, 1], sign*diff_vectors[i_vect, 2]))
+                bvalsWritten.append(sign*bvalsRequested[i_vect])  # record written b-value for debugging
+
+    elif order == "rep":
+        for i_rep in range(nbRep[0]):
+            for i_vect in range(len(bvalsRequested)):
+
+                sign = 1
+                volume_nb = i_rep*diff_vectors.shape[0] + i_vect
+                fileObj.write('Vector[{:d}] = ( {:1.8f}, {:1.8f}, {:1.8f} )\n'.format(volume_nb, sign*diff_vectors[i_vect, 0], sign*diff_vectors[i_vect, 1], sign*diff_vectors[i_vect, 2]))
+                bvalsWritten.append(sign*bvalsRequested[i_vect])  # record written b-value for debugging
+
+    else:
+        sys.exit("ERROR: the requested order (argument \"-order\" is not recognized.")
+
+
+    print(bvalsWritten)
 
     # all done
     fileObj.close()
@@ -77,6 +104,8 @@ if __name__ == "__main__":
     requiredArgs.add_argument('-v', dest='unitVectDir', help="List (within squared brackets and separate items by commas) of coordinates of a vector of norm 1 giving the desired diffusion gradient direction.", type=str, required=True)
     requiredArgs.add_argument('-o', dest='oFname', help="Output file name.", type=str, required=True)
 
+    optionalArgs.add_argument('-order', dest='order', help='Enter \"bval\" for an order by b-value or \"rep\" for an order by repetition. Note that the order repetition-wise can only be performed if the same number of repetitions per b-value is requested.', type=str, required=False, default="bval")
+
     parser._action_groups.append(optionalArgs)
 
     args = parser.parse_args()
@@ -91,7 +120,7 @@ if __name__ == "__main__":
           '\n\n')
 
     # run main
-    main(bvalsRequested=np.array(args.bvalsRequested.strip("[]").split(','), dtype=float), nbRep=np.array(args.nbRep.strip("[]").split(','), dtype=int), unitVectDir=np.array(args.unitVectDir.strip("[]").split(','), dtype=float), oFname=args.oFname)
+    main(bvalsRequested=np.array(args.bvalsRequested.strip("[]").split(','), dtype=float), nbRep=np.array(args.nbRep.strip("[]").split(','), dtype=int), unitVectDir=np.array(args.unitVectDir.strip("[]").split(','), dtype=float), oFname=args.oFname, order=args.order)
 
 
 
