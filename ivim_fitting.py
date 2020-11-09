@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3.6
 # -*- coding: utf-8 -*-
 """
 Compute IVIM parameters maps fitting IVIM model voxel-wise and using parallel threading.
@@ -32,6 +32,9 @@ class IVIMfit:
         self.plot_dir = ''
         self.save_plots = save_plots
         self.model = model
+        # define the fit approach as global variable to avoid having to define a fit_warpper function for each fit approach (needed in pool.map for multithreading)
+        global approach
+        approach = model
 
     def run_fit(self, true_params=[], verbose=1):
         """Run defined fit."""
@@ -75,7 +78,7 @@ class IVIMfit:
         else:
             # ---- on one worker ----
             # ivim_params_all_vox = map(fit_func, iter(values_voxels_to_fit), [bvals] * n_vox_to_fit, [ofolder + "/" + plot_dir+"/z{2}_y{1}_x{0}.png".format(*vox_coord) for vox_coord in np.array(idx_voxels_to_fit).T], [n_vox_to_fit] * n_vox_to_fit)
-            self.ivim_metrics_all_voxels = map(fit_warpper, fit_func_args)
+            self.ivim_metrics_all_voxels = list(map(fit_warpper, fit_func_args))
 
         elapsed_time = time.time() - start_time
         if verbose:
@@ -84,10 +87,6 @@ class IVIMfit:
 
 def main(dwi_fname, bval_fname, mask_fname, model, ofolder, multithreading):
     """Main."""
-
-    # define the fit approach as global variable to avoid having to define a fit_warpper function for each fit approach (needed in pool.map for multithreading)
-    global approach
-    approach = model
 
     # load data
     dwi = nib.load(dwi_fname).get_data()
@@ -200,7 +199,7 @@ def plot_fit(bvals, S, fit_res):
     plt.figure(figsize=(12, 9))
     ax = plt.gca()
     plt.title('Model: ' + fit_res.model.name[6:-1] + ' - Algo: ' + fit_res.method + '\n')
-    xwide = np.linspace(0, np.max(bvals), np.max(bvals) * 2)
+    xwide = np.linspace(0, np.max(bvals), int(np.max(bvals) * 2))
     ax.plot(bvals, np.log(S), color='b', linestyle='', marker='.', markersize=8, label='data')
     ax.plot(xwide, np.log(fit_res.eval(x=xwide)), color='r', linestyle='-', linewidth=1, label='final fit')
     ax.grid(which='major', linestyle=':', alpha=0.9)
@@ -706,7 +705,7 @@ def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, ve
         if plot_dir[:2] not in ['//', '/']:  # BECAREFUL: SOME OUTPUT FOLDER NAME MIGHT NOT WORK HERE DEPENDING ON THE PLATFORM
             # plot and save fit
             ax = plot_fit(bvals, S, fit_res)
-            xwide = np.linspace(0, np.max(bvals), np.max(bvals) * 2)
+            xwide = np.linspace(0, np.max(bvals), int(np.max(bvals) * 2))
             ax.plot(xwide, -ivim_params["Dinit"] * xwide + np.log(ivim_params["S0(1-f)"]), color='orange',
                     linestyle='-', linewidth=1, label='D and S0 initialization')
             ax.plot(xwide, -0.2e-3 * ivim_params["Dinit"] * xwide + 1.7 * np.log(ivim_params["S0(1-f)"]),
