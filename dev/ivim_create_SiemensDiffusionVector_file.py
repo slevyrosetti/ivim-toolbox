@@ -4,10 +4,15 @@ import argparse
 import os
 from datetime import datetime
 import numpy as np
+import sys
 
 
 def main(bvalsRequested, nbRep, unitVectDir, oFname):
     """Main."""
+
+    # if only one number of repetitions requested, apply the same to each b-values
+    if len(nbRep) == 1:
+        nbRep = np.tile(nbRep, (len(bvalsRequested)))
 
     # create file
     fileObj = open(oFname+'.txt', 'w')
@@ -18,7 +23,8 @@ def main(bvalsRequested, nbRep, unitVectDir, oFname):
                 '# DWI Siemens orientation file for IVIM\n'
                 '# Author: '+username+'\n'
                 '# Date: '+datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)")+'\n'
-                '# \n'
+                '# Generated with command:\n'
+                '# '+' '.join([os.path.basename(sys.argv[0])]+sys.argv[1:])+'\n'              '# \n'
                 '# If run with b = '+str(max(bvalsRequested))+', obtained b-values will be (s/mm2):\n'
                 '# '+str(bvalsRequested)+'\n'
                 '# Number of b-values: '+str(len(bvalsRequested))+'\n'
@@ -28,7 +34,7 @@ def main(bvalsRequested, nbRep, unitVectDir, oFname):
                 '#-------------------------------------------------------------------------------\n\n')
 
     # write characteristics of the diffusion file that will be read by the scanner
-    fileObj.write('[directions='+str(len(bvalsRequested)*nbRep)+']\nCoordinateSystem = prs\nNormalisation = none\n')
+    fileObj.write('[directions='+str(np.sum(nbRep))+']\nCoordinateSystem = prs\nNormalisation = none\n')
     # NOT SUPPORTED ON VB17: fileID.write('Comment = To be run with b='+str(max(bvalsRequested))+'s/mm2\n')
 
     # compute vectors norms
@@ -43,10 +49,11 @@ def main(bvalsRequested, nbRep, unitVectDir, oFname):
     # write vectors in file
     bvalsWritten = []  # matrix to record written b-values (for debugging)
     for i_vect in range(len(bvalsRequested)):
-        for i_rep in range(nbRep):
+        for i_rep in range(nbRep[i_vect]):
 
             sign = 1
-            fileObj.write('Vector[{:d}] = ( {:1.8f}, {:1.8f}, {:1.8f} )\n'.format(i_rep + i_vect*nbRep, sign*diff_vectors[i_vect, 0], sign*diff_vectors[i_vect, 1], sign*diff_vectors[i_vect, 2]))
+            volume_nb = np.sum(nbRep[0:i_vect])+i_rep
+            fileObj.write('Vector[{:d}] = ( {:1.8f}, {:1.8f}, {:1.8f} )\n'.format(volume_nb, sign*diff_vectors[i_vect, 0], sign*diff_vectors[i_vect, 1], sign*diff_vectors[i_vect, 2]))
             bvalsWritten.append(sign*bvalsRequested[i_vect])  # record written b-value for debugging
 
     # all done
@@ -65,9 +72,9 @@ if __name__ == "__main__":
     optionalArgs = parser._action_groups.pop()
     requiredArgs = parser.add_argument_group('required arguments')
 
-    requiredArgs.add_argument('-b', dest='bvalsRequested', help='List (separate items by commas) of b-values desired.', type=str, required=True)
-    requiredArgs.add_argument('-r', dest='nbRep', help="Number of repetitions of each b-value.", type=int, required=True)
-    requiredArgs.add_argument('-v', dest='unitVectDir', help="List (separate items by commas) of coordinates of a vector of norm 1 giving the desired diffusion gradient direction.", type=str, required=True)
+    requiredArgs.add_argument('-b', dest='bvalsRequested', help='List (within brackets and separate items by commas) of b-values desired.', type=str, required=True)
+    requiredArgs.add_argument('-r', dest='nbRep', help="List (within squared brackets and separate items by commas) of the number of repetitions desired for each b-value (if only one value, the same number of repetitions will be applied to each b-value).", type=str, required=True)
+    requiredArgs.add_argument('-v', dest='unitVectDir', help="List (within squared brackets and separate items by commas) of coordinates of a vector of norm 1 giving the desired diffusion gradient direction.", type=str, required=True)
     requiredArgs.add_argument('-o', dest='oFname', help="Output file name.", type=str, required=True)
 
     parser._action_groups.append(optionalArgs)
@@ -84,7 +91,7 @@ if __name__ == "__main__":
           '\n\n')
 
     # run main
-    main(bvalsRequested=np.array(args.bvalsRequested.split(','), dtype=float), nbRep=args.nbRep, unitVectDir=np.array(args.unitVectDir.split(','), dtype=float), oFname=args.oFname)
+    main(bvalsRequested=np.array(args.bvalsRequested.strip("[]").split(','), dtype=float), nbRep=np.array(args.nbRep.strip("[]").split(','), dtype=int), unitVectDir=np.array(args.unitVectDir.strip("[]").split(','), dtype=float), oFname=args.oFname)
 
 
 
