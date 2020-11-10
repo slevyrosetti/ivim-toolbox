@@ -9,8 +9,6 @@ Created on Tue Jul  4 17:45:43 2017
 @author: slevy
 """
 
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import time
