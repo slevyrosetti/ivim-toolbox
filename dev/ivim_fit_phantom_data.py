@@ -6,8 +6,10 @@ import matplotlib.pyplot as plt
 import argparse
 import nibabel as nib
 import os
+import warnings
+from cycler import cycler
 
-def main(maskFnames, dwiFnames, bvalFnames, oPlotNames, average, title):
+def main(maskFnames, dwiFnames, bvalFnames, oPlotNames, analysis, title):
     """Main."""
 
     # initialize variables
@@ -34,98 +36,196 @@ def main(maskFnames, dwiFnames, bvalFnames, oPlotNames, average, title):
             bvals = np.loadtxt(bvalFnames[i_case], delimiter=None)
         data[i_case] = {"b-values": bvals, "plot file name": os.path.abspath(oPlotNames[i_case])}
 
-        # extract signal for each volume
-        data[i_case]["Sroi"] = np.zeros((dwi.shape[3]))
-        for i_t in range(dwi.shape[3]):
-            dwi_t_i = dwi[:, :, :, i_t]
-            data[i_case]["Sroi"][i_t] = np.mean(dwi_t_i[mask > 0])
 
-        # average across repetitions if asked by user, and normalize by b=0
-        if average:
-            bvals_unique = np.unique(bvals)
-            data[i_case]["Sroi_averaged"] = np.zeros((len(bvals_unique), 2))  # Nbvals X (mean, std across reps)
+        # loop over voxels (to have a voxel-wise estimation)
+        idx_vox = np.where(mask > 0)
+        bvals_unique = np.unique(bvals)
+        data[i_case]["S across reps by vox"], data[i_case]["log(S/S0) across reps by vox"], data[i_case]["D across reps by vox"], data[i_case]["S0 across reps by vox"] = np.zeros((len(idx_vox[0]), bvals_unique.shape[0], 2)), np.zeros((len(idx_vox[0]), bvals_unique.shape[0], 2)), np.zeros((len(idx_vox[0]), bvals_unique.shape[0], 2)), np.zeros((len(idx_vox[0]), bvals_unique.shape[0], 2))
+        data[i_case]["D based average by vox"], data[i_case]["S0 based average by vox"] = np.zeros((len(idx_vox[0]))), np.zeros((len(idx_vox[0])))
+        for i_vox in range(len(idx_vox[0])):
+            print("Processing voxel x={}, y={}, z={}\n".format(idx_vox[0][i_vox], idx_vox[1][i_vox], idx_vox[2][i_vox]))
+
+            # extract signal for each volume
+            Svox = dwi[idx_vox[0][i_vox], idx_vox[1][i_vox], idx_vox[2][i_vox], :]
+
+            # Calculate mean and SD signal across reps by b-value
+            # data[i_case]["Sroi_averaged"] = np.zeros((len(bvals_unique), 2))  # Nbvals X (mean, std across reps)
             for i_b in range(len(bvals_unique)):
-                data[i_case]["Sroi_averaged"][i_b, 0] = np.mean(data[i_case]["Sroi"][bvals == bvals_unique[i_b]])
-                data[i_case]["Sroi_averaged"][i_b, 1] = np.std(data[i_case]["Sroi"][bvals == bvals_unique[i_b]])
-            data[i_case]["Sroi_norm"] = np.divide(data[i_case]["Sroi_averaged"], np.broadcast_to(data[i_case]["Sroi_averaged"][0, 0], data[i_case]["Sroi_averaged"].shape))
-            # compute the SD after normalization and log
-            Sroi_nonAv_norm = np.divide(data[i_case]["Sroi"], np.broadcast_to(data[i_case]["Sroi_averaged"][0, 0], data[i_case]["Sroi"].shape))
-            data[i_case]["Sroi_norm_log"] = np.zeros((len(bvals_unique), 2))
+                data[i_case]["S across reps by vox"][i_vox, i_b, :] = [np.mean(Svox[bvals == bvals_unique[i_b]]), np.std(Svox[bvals == bvals_unique[i_b]])]
+
+            # Calculate mean and SD log(S/S0) across reps by b-value
+            logS_S0_vox = np.log(Svox/data[i_case]["S across reps by vox"][i_vox, bvals_unique == 0, 0])
             for i_b in range(len(bvals_unique)):
-                data[i_case]["Sroi_norm_log"][i_b, 0] = np.mean(np.log(Sroi_nonAv_norm[bvals == bvals_unique[i_b]]))
-                data[i_case]["Sroi_norm_log"][i_b, 1] = np.std(np.log(Sroi_nonAv_norm[bvals == bvals_unique[i_b]]))
+                data[i_case]["log(S/S0) across reps by vox"][i_vox, i_b, :] = [np.mean(logS_S0_vox[bvals == bvals_unique[i_b]]), np.std(logS_S0_vox[bvals == bvals_unique[i_b]])]
 
-        # fit bi-exponential model with one-step method
-        ivim_fit = ivim_fitting.IVIMfit(bvals=bvals_unique,
-                                        voxels_values=np.array([data[i_case]["Sroi_norm"][:, 0]]),
-                                        voxels_idx=tuple([np.array([0]), np.array([0]), np.array([0])]),
-                                        ofit_dir=data[i_case]["plot file name"],
-                                        model='one-step',
-                                        multithreading=0)
-        ivim_fit.run_fit()
+            # linear fit to get D based on the average signal across reps for this voxel
+            p_highb, r2, sum_squared_error = fit_D_only(bvals_unique, data[i_case]["S across reps by vox"][i_vox, :, 0]/data[i_case]["S across reps by vox"][i_vox, bvals_unique == 0, 0])
+            data[i_case]["D based average by vox"][i_vox], data[i_case]["S0 based average by vox"][i_vox] = p_highb.coef[0], p_highb.coef[1]
 
-        # linear fit to get D
-        fit_x = bvals_unique
-        fit_y = data[i_case]["Sroi_norm_log"][:, 0]
-        p_highb, r2, sum_squared_error = fit_D_only(fit_x[(fit_x >= 500) & (fit_x <= 1000)], fit_y[(fit_x >= 500) & (fit_x <= 1000)])
-        data[i_case]["polyfit high D"] = p_highb
+            # # fit bi-exponential model with one-step method
+            # ivim_fit = ivim_fitting.IVIMfit(bvals=bvals_unique,
+            #                                 voxels_values=np.array([data[i_case]["S across reps by vox"][i_vox, :, 0]/data[i_case]["S across reps by vox"][i_vox, bvals_unique == 0, 0]]),
+            #                                 voxels_idx=tuple(idx_vox),
+            #                                 ofit_dir='',
+            #                                 model='one-step',
+            #                                 multithreading=0,
+            #                                 save_plots=False)
+            # ivim_fit.run_fit()
+            # data[i_case]["D based average by vox"][i_vox], data[i_case]["S0 based average by vox"][i_vox] = ivim_fit.ivim_metrics_all_voxels[0]["D"], ivim_fit.ivim_metrics_all_voxels[0]["S0"]
+            # del ivim_fit
 
+            # if asked by user, estimate the SD across repetitions on the estimation of D based on the b-value and the 2 previous ones
+            if analysis == "rep" and len(bvals) % len(bvals_unique) == 0:
+
+                Nrep = len(bvals)//len(bvals_unique)
+                print("\nAnalysis by repetition\nData include {} repetitions\n".format(Nrep))
+
+                for i_b in range(2, len(bvals_unique)):
+                    print("Processing b-value {}mm²/s\n".format(bvals_unique[i_b]))
+
+                    D = np.zeros(Nrep)
+                    S0 = np.zeros(Nrep)
+                    for i_rep in range(Nrep):
+                        # linear fit
+                        fitPoly, r2, sum_squared_error = fit_D_only(bvals[i_rep*len(bvals_unique)+i_b-2:i_rep*len(bvals_unique)+i_b+1],
+                                                                    Svox[i_rep*len(bvals_unique)+i_b-2:i_rep*len(bvals_unique)+i_b+1]/Svox[i_rep*len(bvals_unique)])
+                        D[i_rep], S0[i_rep] = fitPoly.coef[0], fitPoly.coef[1]
+
+                        # # bi-exponential fit
+                        # if i_b <= len(bvals)-6:
+                        #     first_bval = i_b
+                        # else:
+                        #     first_bval = len(bvals)-6
+                        # ivim_fit = ivim_fitting.IVIMfit(bvals=bvals[i_rep*len(bvals_unique)+first_bval:i_rep*len(bvals_unique)+first_bval+6],
+                        #                                 voxels_values=np.array([Svox[i_rep*len(bvals_unique)+first_bval:i_rep*len(bvals_unique)+first_bval+1]/Svox[i_rep*len(bvals_unique)]]),
+                        #                                 voxels_idx=tuple(idx_vox),
+                        #                                 ofit_dir='',
+                        #                                 model='one-step',
+                        #                                 multithreading=0,
+                        #                                 save_plots=False)
+                        # ivim_fit.run_fit()
+                        # D[i_rep], S0[i_rep] = ivim_fit.ivim_metrics_all_voxels[0]["D"], ivim_fit.ivim_metrics_all_voxels[0]["S0"]
+                        # del ivim_fit
+
+                    data[i_case]["D across reps by vox"][i_vox, i_b, :] = [np.mean(D), np.std(D)]
+                    data[i_case]["S0 across reps by vox"][i_vox, i_b, :] = [np.mean(S0), np.std(S0)]
+
+            elif len(bvals) % len(bvals_unique) != 0:
+                 warnings.warn("Not the same number of b-values is available for each repetition ==> the repetition analysis cannot be performed.")
+
+        # Get the stats (mean and SD) across all voxels in the ROI
+        data[i_case]["D based average across all voxels"] = np.array([np.mean(data[i_case]["D based average by vox"]), np.std(data[i_case]["D based average by vox"])])
+        data[i_case]["S0 based average across all voxels"] = np.array([np.mean(data[i_case]["S0 based average by vox"]), np.std(data[i_case]["S0 based average by vox"])])
+        data[i_case]["S across reps across all voxels"] = np.mean(data[i_case]["S across reps by vox"], axis=0)
+        data[i_case]["log(S/S0) across reps across all voxels"] = np.mean(data[i_case]["log(S/S0) across reps by vox"], axis=0)
+        data[i_case]["D across reps across all voxels"] = np.mean(data[i_case]["D across reps by vox"], axis=0)
+        data[i_case]["S0 across reps across all voxels"] = np.mean(data[i_case]["S0 across reps by vox"], axis=0)
+
+
+    # -------------
     # print results
-    print("SD across repetitions for each b-value and case\n"
-          "===============================================\n"
-          +str(bvals_unique)+"\n")
+    # -------------
+    print("Mean+/-SD across voxels of D based on the average signal across repetitions for each case\n"
+          "==================================================================================\n")
     for i_case in range(nCases):
-        print(oPlotNames[i_case]+"\n------------\n"+str(data[i_case]["Sroi_norm_log"][:, 1]))
+        print("{}\n------------\n{:.3e} +/- {:.3e}".format(oPlotNames[i_case], data[i_case]["D based average across all voxels"][0], data[i_case]["D based average across all voxels"][1])+"\n\n")
+    if analysis == "rep":
+        print("Mean across voxels of Mean +/- SD across repetitions of D for each b-value and case\n"
+              "=========================================================\n"
+              +str(bvals_unique)+"\n")
+        for i_case in range(nCases):
+            print("{}\n------------\n{}\n+/-{}\n\n".format(oPlotNames[i_case], data[i_case]["D across reps across all voxels"][:, 0], data[i_case]["D across reps across all voxels"][:, 1]))
 
     # plot results
     # ------------
-    fig, axes = plt.subplots(2, 2, figsize=(17, 9.5), num="Fit D")
+    fig, axes = plt.subplots(2, 2, figsize=(17, 9.5), num="Fit based on the average across repetitions")
     plt.subplots_adjust(wspace=0.3, left=0.1, right=0.9, hspace=0.3, bottom=0.1, top=0.85)
-    cmap = plt.cm.jet
-    plt.rcParams['axes.prop_cycle'] = plt.cycler(color=cmap(np.repeat(np.linspace(0, 1, nCases), 2)))
-    xp = np.linspace(bvals[0], bvals[-1], 1000)
-
+    jet_cycler = cycler(color=plt.cm.jet(np.linspace(0, 1, nCases)))
+    axes[0, 0].set_prop_cycle(jet_cycler)
+    axes[0, 1].set_prop_cycle(jet_cycler)
+    axes[1, 0].set_prop_cycle(jet_cycler)
+    axes[1, 1].set_prop_cycle(jet_cycler)
+    # plt.rcParams['axes.prop_cycle'] = plt.cycler(color=plt.cm.jet(np.repeat(np.linspace(0, 1, nCases), 2)))
+    xp = np.linspace(bvals_unique[0], bvals_unique[-1], 1000)
     for i_case in range(nCases):
 
         # mean signal
-        plot = axes[0, 0].errorbar(bvals_unique, data[i_case]["Sroi_averaged"][:, 0],
-                                yerr=data[i_case]["Sroi_averaged"][:, 1],
+        plot = axes[0, 0].errorbar(bvals_unique, data[i_case]["S across reps across all voxels"][:, 0],
+                                yerr=data[i_case]["S across reps across all voxels"][:, 1],
                                 elinewidth=0.3,
                                 marker='.',
                                 markersize=8.,
                                 lw=0,
                                 label=oPlotNames[i_case])
-        axes[0, 0].plot(xp, data[i_case]["Sroi_averaged"][0, 0]*np.exp(data[i_case]["polyfit high D"](xp)), '-', linewidth=0.5, color=plot[0].get_color())  # fit
-        plotLog = axes[0, 1].errorbar(bvals_unique, data[i_case]["Sroi_norm_log"][:, 0],
-                                   yerr=data[i_case]["Sroi_norm_log"][:, 1],
+        axes[0, 0].plot(xp, data[i_case]["S0 based average across all voxels"][0]*np.exp(data[i_case]["D based average across all voxels"][0]*xp),
+                        '-',
+                        linewidth=0.5,
+                        color=plot[0].get_color())  # fit
+        axes[0, 0].set(xlabel='b-values (s/mm$^2$)', ylabel='S', title='Mean raw signal across repetitions')
+
+        # log
+        plotLog = axes[0, 1].errorbar(bvals_unique, data[i_case]["log(S/S0) across reps across all voxels"][:, 0],
+                                   yerr=data[i_case]["log(S/S0) across reps across all voxels"][:, 1],
                                    elinewidth=0.3,
                                    marker='.',
                                    markersize=8.,
                                    lw=0,
                                    label=oPlotNames[i_case])
-        axes[0, 1].plot(xp, data[i_case]["polyfit high D"](xp), '-', linewidth=0.5, color=plotLog[0].get_color())  # fit
+        axes[0, 1].plot(xp, data[i_case]["D based average across all voxels"][0]*xp+data[i_case]["S0 based average across all voxels"][0],
+                        '-',
+                        linewidth=0.5,
+                        color=plotLog[0].get_color())  # fit
+        axes[0, 1].set(xlabel='b-values (s/mm$^2$)', ylabel='ln(S\S0)', title='Mean voxel-wise ln(S/S0) and SD across repetitions')
 
         # SD across repetitions
-        axes[1, 0].plot(bvals_unique, data[i_case]["Sroi_averaged"][:, 1],
+        axes[1, 0].plot(bvals_unique, 100*data[i_case]["S across reps across all voxels"][:, 1]/data[i_case]["S across reps across all voxels"][:, 0],
                                 marker='.',
                                 markersize=8.,
                                 lw=0.5,
                                 label=oPlotNames[i_case])
-        axes[1, 1].plot(bvals_unique, data[i_case]["Sroi_norm_log"][:, 1],
+        axes[1, 0].set(xlabel='b-values (s/mm$^2$)', ylabel='SD across repetitions (% of mean)')
+        axes[1, 1].plot(bvals_unique, 100*data[i_case]["log(S/S0) across reps across all voxels"][:, 1],
                                 marker='.',
                                 markersize=8.,
                                 lw=0.5,
                                 label=oPlotNames[i_case])
+        axes[1, 1].set(xlabel='b-values (s/mm$^2$)', ylabel='SD across repetitions')
 
-    axes[0, 0].grid()
-    axes[0, 1].grid()
-    axes[0, 0].set(xlabel='b-values (s/mm$^2$)', ylabel='S', title='Mean raw signal across repetitions')
-    axes[0, 1].set(xlabel='b-values (s/mm$^2$)', ylabel='ln(S)', title='Log of the signal normalized')
-    axes[0, 0].legend()
-    axes[1, 0].set(xlabel='b-values (s/mm$^2$)', ylabel='SD across repetitions')
-    axes[1, 1].set(xlabel='b-values (s/mm$^2$)', ylabel='SD across repetitions')
-    fig.suptitle(title, fontsize=20)
-    fig.savefig(title+".png")
+        axes[0, 0].grid()
+        axes[0, 1].grid()
+        axes[0, 0].legend()
+        fig.suptitle(title, fontsize=20)
+        fig.savefig(oPlotNames[i_case]+".png")
+        # plt.close()
+
+    if analysis == "rep":
+        for i_case in range(nCases):
+
+            figRep, axesRep = plt.subplots(1, 2, figsize=(17, 9.5), num="Analysis of D estimation by repetition")
+            plt.subplots_adjust(wspace=0.3, left=0.1, right=0.9, hspace=0.3, bottom=0.1, top=0.85)
+            jet_cycler = cycler(color=plt.cm.jet(np.linspace(0, 1, len(bvals_unique)-2), 2))
+            axesRep[0].set_prop_cycle(jet_cycler)
+            axesRep[1].set_prop_cycle(jet_cycler)
+            # plt.rcParams['axes.prop_cycle'] = plt.cycler(color=plt.cm.jet(np.repeat(np.linspace(0, 1, len(bvals_unique)-2), 2)))
+
+            for i_b in range(2, len(bvals_unique)):
+                # mean signal
+                plotRep = axesRep[0].plot(bvals_unique[i_b], data[i_case]["log(S/S0) across reps across all voxels"][i_b, 0],
+                                marker='.',
+                                markersize=10.,
+                                lw=0,
+                                label=oPlotNames[i_case] if i_b==5 else "_nolegend_")
+                # linear fit
+                axesRep[0].plot(xp, data[i_case]["D across reps across all voxels"][i_b, 0]*xp+data[i_case]["S0 across reps across all voxels"][i_b, 0], '-', linewidth=0.5, color=plotRep[0].get_color())
+            axesRep[0].set(xlabel='b-values (s/mm$^2$)', ylabel='ln(S/S0)', title='Mean estimated D by b-value')
+            axesRep[0].legend()
+
+            # plot SD on D
+            axesRep[1].bar(bvals_unique, -100*data[i_case]["D across reps across all voxels"][:, 1]/np.mean(data[i_case]["D across reps across all voxels"][2:, 0]), width=45)
+            axesRep[1].set(xlabel='b-values (s/mm$^2$)', ylabel='SD (% of the mean)', title='SD on D across repetitions')
+            figRep.suptitle(title, fontsize=20)
+            figRep.savefig(oPlotNames[i_case]+"_repAnalysis.png")
+            # plt.close()
 
     plt.show()
 
@@ -133,7 +233,7 @@ def main(maskFnames, dwiFnames, bvalFnames, oPlotNames, average, title):
 
 
 def fit_D_only(x, y):
-    polyfit = np.poly1d(np.polyfit(x, y, 1))
+    polyfit = np.poly1d(np.polyfit(x, np.log(y), 1))
 
     sum_squared_error = np.sum(np.square(y - polyfit(x)))
 
@@ -166,7 +266,7 @@ if __name__ == "__main__":
     requiredArgs.add_argument('-bval', dest='bvalFnames', help="List (separate items by commas) of paths to b_values files.", type=str, required=True)
     requiredArgs.add_argument('-cases', dest='oPlotNames', help="List (separate items by commas) of corresponding names for the output plots.", type=str, required=True)
 
-    optionalArgs.add_argument('-average', dest='bool', help='Optional argument to average or not volumes across repetitions before fitting and plotting (ONLY THIS OPTION IMPLEMENTED SO FAR).', type=str, required=False, default=True)
+    optionalArgs.add_argument('-analysis', dest='analysis', help='Optional argument to perform a specific analysis: \"rep\" will estimate the SD on D across repetitions.', type=str, required=False, default="")
     optionalArgs.add_argument('-o', dest='title', help='Title of the main generated plot and file.', type=str, required=False, default='')
 
     parser._action_groups.append(optionalArgs)
@@ -183,7 +283,7 @@ if __name__ == "__main__":
           '\n\n')
 
     # run main
-    main(maskFnames=args.maskFnames.split(','), dwiFnames=args.dwiFnames.split(','), bvalFnames=args.bvalFnames.split(','), oPlotNames=args.oPlotNames.split(','), average=args.bool, title=args.title)
+    main(maskFnames=args.maskFnames.split(','), dwiFnames=args.dwiFnames.split(','), bvalFnames=args.bvalFnames.split(','), oPlotNames=args.oPlotNames.split(','), analysis=args.analysis, title=args.title)
 
 
 
