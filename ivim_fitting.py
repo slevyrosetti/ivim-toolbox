@@ -17,6 +17,7 @@ from lmfit import Model
 import os
 import nibabel as nib
 import argparse
+from datetime import datetime
 
 
 class IVIMfit:
@@ -41,7 +42,7 @@ class IVIMfit:
 
         if self.save_plots:
             # create dedicated plot directory
-            self.plot_dir = "%s_plots" % time.strftime("%y%m%d%H%M%S")
+            self.plot_dir = "%s_plots" % datetime.now().strftime("%y%m%d%H%M%S%f")[0:13]
             os.makedirs(self.ofit_dir + "/" + self.plot_dir)
 
         n_vox_to_fit = self.voxels_values.shape[0]
