@@ -8,6 +8,7 @@ import nibabel as nib
 import os
 import warnings
 from cycler import cycler
+import _pickle as pickle
 
 def main(maskFnames, dwiFnames, bvalFnames, oPlotNames, analysis, title):
     """Main."""
@@ -121,6 +122,11 @@ def main(maskFnames, dwiFnames, bvalFnames, oPlotNames, analysis, title):
         data[i_case]["D across reps across all voxels"] = np.mean(data[i_case]["D across reps by vox"], axis=0)
         data[i_case]["S0 across reps across all voxels"] = np.mean(data[i_case]["S0 across reps by vox"], axis=0)
 
+    # -------------
+    # save results as pickle file
+    # -------------
+    pickle.dump(data, open("phantomData_analysis.pickle", "wb"))
+    print(">> Results savec to: phantomData_analysis.pickle")
 
     # -------------
     # print results
