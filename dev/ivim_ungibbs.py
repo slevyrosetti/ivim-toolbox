@@ -68,7 +68,7 @@ def main(iFname, oFname, plot):
                           cmap='gray', origin='lower', vmin=-500, vmax=500)
         ax.flat[2].set_title('Gibbs residuals')
 
-        plt.show()
+        # plt.show()
         """
         .. figure:: Gibbs_suppression_b0.png
         :align: center
