@@ -580,7 +580,7 @@ if __name__ == "__main__":
     # load display parameters for each image
     param_image1 = ParamImageVisualization()
     visualization_parameters = ParamMultiImageVisualization([param_image1])
-    param_images = [args.display_param]
+    param_images = args.display_param.split(":")
     # update registration parameters
     for param in param_images:
         visualization_parameters.addImage(param)
