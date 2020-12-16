@@ -25,6 +25,7 @@ fmt = mticker.FuncFormatter(g)
 dataFolder = str(Path.home())+"/job/data/zurich/3T/20201109_phantomGel"
 
 diffDirs = ["phase", "read", "slice"]
+diffDirs_labels = ["A-P", "R-L", "I-S"]
 
 
 # ======================================================================================================================
@@ -48,7 +49,7 @@ for i_dir in range(len(diffDirs)):
     bvals_unique = np.unique(data[i_case]["b-values"])
 
     axes[0, i_dir].bar(bvals_unique, -100*data[i_case]["D across reps across all voxels"][:, 1]/np.mean(data[i_case]["D across reps across all voxels"][2:, 0]), width=45, color="tab:blue")
-    axes[0, i_dir].set(xlabel='b-value (s/mm$^2$)', ylabel='', title='Diffusion direction = '+diffDirs[i_dir]+' encoding')
+    axes[0, i_dir].set(xlabel='b-value (s/mm$^2$)', ylabel='', title='Diffusion encoding direction = '+diffDirs_labels[i_dir])
     axes[0, i_dir].xaxis.label.set_size(15)
     axes[0, i_dir].axhline(y=50, color="gray", lw=0.75)
     axes[0, i_dir].axvline(x=650, color="red", lw=3)
