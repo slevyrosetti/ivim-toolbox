@@ -13,18 +13,18 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 dataFolder = str(Path.home())+"/job/data/zurich/3T/mean_hc"
 
 levels = [1, 2, 3]
-levelsZ = [[940, 951], [915, 931], [878, 894]]
+levelsZ = [[938, 954], [915, 931], [885, 901]]
 # metrics = ['mge',    'Fivim', 'Dstar',     'FivimXDstar', 'D_phase',   'D_read',    'D_slice']
 # clims =   [(200, 700), (0, .3), (0, 20e-3),  (0, 1e-3),     (0, 0.5e-3), (0, 0.5e-3), (0, 2.0e-3)]
 # metricsLabels = ['MEDIC', 'f$_{IVIM}$ (%)', 'D$^*$ (mm$^2$/s)', 'f$_{IVIM}$D$^*$ (mm$^2$/s)', 'D$_{A-P}$ (mm$^2$/s)', 'D$_{R-L}$ (mm$^2$/s)', 'D$_{I-S}$ (mm$^2$/s)']
-metrics = ['mge',   'Fivim_phase', 'Fivim_read',   'Fivim_slice', 'Fivim',  'Dstar_phase', 'Dstar_read', 'Dstar_slice', 'Dstar']
-clims =   [(200, 600), (0, 0.3), (0, .3), (0, .3), (0, .3), (0, 20e-3), (0, 20e-3), (0, 20e-3), (0, 20e-3)]
+metrics = ['mge',   'FivimXDstar_phase', 'FivimXDstar_read',   'FivimXDstar_slice', 'FivimXDstar',  'D_phase', 'D_read', 'D_slice', 'D']
+clims =   [(200, 600), (0, 1.5e-3), (0, 1.5e-3), (0, 1.5e-3), (0, 1.5e-3), (0.3e-3, 0.45e-3), (0.3e-3, 0.45e-3), (1.4e-3, 1.9e-3), (0.75e-3, 0.85e-3)]
 metricsLabels = ['MEDIC', 'A-P', 'R-L', 'I-S', 'Average', 'A-P', 'R-L', 'I-S', 'Average']
-cbarLabels = ['f$_{IVIM}$ (%)', 'D$^*$ (mm$^2$/s)']
+cbarLabels = [r'f$_{IVIM}\times$D$^*$ (mm$^2$/s)', 'D (mm$^2$/s)']
 # ======================================================================================================================
 
-fig, axes = plt.subplots(len(levels), len(metrics), figsize=(20, 10))
-plt.subplots_adjust(wspace=0.3, left=0.07, right=0.99, hspace=-0.7, bottom=0.01, top=0.90)
+fig, axes = plt.subplots(len(levels), len(metrics), figsize=(20, 8.7))
+plt.subplots_adjust(wspace=0.1, left=0.07, right=0.99, hspace=-0.89, bottom=-0.25, top=1.00)
 fig.patch.set_facecolor('black')
 
 # load mask
@@ -76,7 +76,7 @@ for i_metric in range(len(metrics)):
                                 width="5%",  # width = 5% of parent_bbox width
                                 height="400%",  # height : 50%
                                 loc='lower left',
-                                bbox_to_anchor=(1.15, 0, 1, 1),
+                                bbox_to_anchor=(1.07, 0, 1, 1),
                                 bbox_transform=axes[i_lev, i_metric].transAxes,
                                 borderpad=0)
             axline.axvline(x=0, color="white")
@@ -91,12 +91,12 @@ for i_metric in range(len(metrics)):
 
         # Colorbars
         # -----------
-        if i_lev == 0 and (i_metric-1) % 4 == 0:
+        if i_lev == 0 and (i_metric-1) == 0:
             axins = inset_axes(axes[i_lev, i_metric],
-                   width="300%",  # width = 5% of parent_bbox width
+                   width="390%",  # width = 5% of parent_bbox width
                    height="15%",  # height : 50%
                    loc='upper center',
-                   bbox_to_anchor=(2, 0.4, 1, 1),
+                   bbox_to_anchor=(1.7, 0.4, 1, 1),
                    bbox_transform=axes[i_lev, i_metric].transAxes,
                    borderpad=0)
             cbar = fig.colorbar(c, cax=axins, orientation='horizontal') #, ticks=clims[i_metric]) #, fraction=0.046, pad=0.04, location='top')
@@ -111,9 +111,63 @@ for i_metric in range(len(metrics)):
             else:  # trick to show the fIVIM values as percentage
                 cbar.formatter.set_powerlimits((-2, -2))
                 cbar.ax.xaxis.get_offset_text().set(size=0, color='black')
+        # for D
+        # transverse
+        if i_lev == 0 and i_metric == 5:
+            axinsTrans = inset_axes(axes[i_lev, i_metric],
+                   width="150%",  # width = 5% of parent_bbox width
+                   height="15%",  # height : 50%
+                   loc='upper center',
+                   bbox_to_anchor=(0.49, 0.4, 1, 1),
+                   bbox_transform=axes[i_lev, i_metric].transAxes,
+                   borderpad=0)
+            cbar = fig.colorbar(c, cax=axinsTrans, orientation='horizontal') #, ticks=clims[i_metric]) #, fraction=0.046, pad=0.04, location='top')
+            cbar.ax.tick_params(labelsize=18, color='black', labelcolor='white', labeltop=True, labelbottom=False, direction='in', length=axinsTrans.get_window_extent().height)
+            # cbar.set_label(cbarLabels[1], color='white', fontsize=35, labelpad=-110)
+
+            # for scientific notation
+            cbar.formatter.set_powerlimits((-3, -3))
+            cbar.ax.xaxis.get_offset_text().set(size=13, color='white')
+            cbar.ax.xaxis.major.formatter._useMathText = True
+
+        #
+        if i_lev == 0 and i_metric == 7:
+            axinsIS = inset_axes(axes[i_lev, i_metric],
+                   width="80%",  # width = 5% of parent_bbox width
+                   height="15%",  # height : 50%
+                   loc='upper center',
+                   bbox_to_anchor=(0.0, 0.4, 1, 1),
+                   bbox_transform=axes[i_lev, i_metric].transAxes,
+                   borderpad=0)
+            cbar = fig.colorbar(c, cax=axinsIS, orientation='horizontal') #, ticks=clims[i_metric]) #, fraction=0.046, pad=0.04, location='top')
+            cbar.ax.tick_params(labelsize=18, color='black', labelcolor='white', labeltop=True, labelbottom=False, direction='in', length=axinsIS.get_window_extent().height)
+            cbar.set_label(cbarLabels[1], color='white', fontsize=35, labelpad=-110, x=0.0)
+
+            # for scientific notation
+            cbar.formatter.set_powerlimits((-3, -3))
+            cbar.ax.xaxis.get_offset_text().set(size=13, color='white')
+            cbar.ax.xaxis.major.formatter._useMathText = True
+
+        if i_lev == 0 and i_metric == 8:
+            axinsIS = inset_axes(axes[i_lev, i_metric],
+                   width="80%",  # width = 5% of parent_bbox width
+                   height="15%",  # height : 50%
+                   loc='upper center',
+                   bbox_to_anchor=(0.0, 0.4, 1, 1),
+                   bbox_transform=axes[i_lev, i_metric].transAxes,
+                   borderpad=0)
+            cbar = fig.colorbar(c, cax=axinsIS, orientation='horizontal') #, ticks=clims[i_metric]) #, fraction=0.046, pad=0.04, location='top')
+            cbar.ax.tick_params(labelsize=18, color='black', labelcolor='white', labeltop=True, labelbottom=False, direction='in', length=axinsIS.get_window_extent().height)
+
+            # for scientific notation
+            cbar.formatter.set_powerlimits((-3, -3))
+            cbar.ax.xaxis.get_offset_text().set(size=13, color='white')
+            cbar.ax.xaxis.major.formatter._useMathText = True
+
 
 
 # plt.show()
-fig.savefig(os.path.dirname(os.path.abspath(__file__)) + '/fig_meanMaps_hc_perfDirs.jpeg') #, transparent=True)
+fig.savefig(os.path.dirname(os.path.abspath(__file__)) + '/fig_meanMaps_hc_perfDirs_FivimXDstar_D.jpeg') #, transparent=True)
+# fig.savefig(os.path.dirname(os.path.abspath(__file__)) + '/fig_meanMaps_hc_perfDirs.pdf') #, transparent=True)
 
 
