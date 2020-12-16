@@ -629,7 +629,7 @@ def fit_1shot_initD(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, bval_
     return ivim_params
 
 
-def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, verbose=1, bval_thr=500):
+def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, verbose=1, bval_thr=400):
     """
     v2: adapted bounds for D and D* to adapt to real data and D NOT FIXED to the initial value resulting from the fit
     of b-values >= bval_thr only.
@@ -660,9 +660,9 @@ def fit_1shot_initD_v2(S, bvals, oplot_fname, n_vox_to_fit=1, true_params={}, ve
         ivim_model = Model(ivim_1pool_model)
         ivim_model.set_param_hint('S0', value=1.2 * ivim_params["S0(1-f)"], min=0.7 * ivim_params["S0(1-f)"],
                                   max=1.7 * ivim_params["S0(1-f)"])
-        ivim_model.set_param_hint('Fivim', value=0.1, min=0, max=0.35)
-        ivim_model.set_param_hint('Dstar', value=(ivim_params["Dinit"] * 0.8 + 35.5e-3) / 2.,
-                                  min=ivim_params["Dinit"] * 0.8, max=35.5e-3)
+        ivim_model.set_param_hint('Fivim', value=0.1, min=0, max=0.20)
+        ivim_model.set_param_hint('Dstar', value=ivim_params["Dinit"] * 10,
+                                  min=ivim_params["Dinit"] * 2, max=50e-3)
         ivim_model.set_param_hint('D', value=ivim_params["Dinit"], min=0.15e-3, max=ivim_params["Dinit"] * 1.2)
         # ivim_model.set_param_hint('D', value=ivim_params["Dinit"], vary=False)  # fix D to Dinit
         ivim_model_constraints = ivim_model.make_params()
