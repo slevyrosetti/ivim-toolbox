@@ -15,7 +15,7 @@ import matplotlib.ticker
 from pathlib import Path
 home = str(Path.home())
 
-hc_id_nb = [1, 3, 4, 5, 6, 7, 8]
+hc_id_nb = [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 dcm_id_nb = [1, 2]
 hcDir = home+'/job/data/zurich/3T/mean_hc/extract_metric'
 dcmDir = home+'/job/data/zurich/3T/mean_dcm/extract_metric'
@@ -88,7 +88,7 @@ def main():
             if paramLabels[i_metric] != 'f$_{IVIM}$ (%)':
                 axes[np.unravel_index(i_metric, axes.shape)].ticklabel_format(axis='y', style='sci', scilimits=(-3, -3))
                 axes[np.unravel_index(i_metric, axes.shape)].yaxis.major.formatter._useMathText = True
-            if paramLabels[i_metric] != 'D (mm$^2$/s)':
+            if paramLabels[i_metric] == 'D (mm$^2$/s)':
                 axes[np.unravel_index(i_metric, axes.shape)].set_ylim(bottom=0.2e-3)
 
         # fake plots for the legend
