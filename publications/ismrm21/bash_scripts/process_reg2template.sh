@@ -151,7 +151,7 @@ for param in ${PARAMS}; do
 	done
 done
 
-fslview ../template/FivimXDstar_map_mean_dirs.nii.gz ../template/Fivim_map_mean_dirs.nii.gz ../template/Dstar_map_mean_dirs.nii.gz ../template/D_map_mean_dirs.nii.gz &
+fslview ${SCT_DIR}/data/PAM50/template/PAM50_t2s.nii.gz ../template/mge2template.nii.gz ../template/FivimXDstar_map_mean_dirs.nii.gz -b 0,0.003 -l $jet ../template/Fivim_map_mean_dirs.nii.gz -b 0,0.3 -l $jet ../template/Dstar_map_mean_dirs.nii.gz -b 0,0.020 -l $jet ../template/D_map_mean_dirs.nii.gz -b 0,0.0015 -l $jet &
 
 
 # REGISTER MAPS IN TEMPLATE SPACE ACROSS SLICES AND THEN AVERAGE ACROSS SLICES
@@ -181,7 +181,7 @@ for dir in ${DIRECTIONS}; do
 done
 mv ../template/maps_mean_z/mge2template_zcrop_${zmin}_${zsize}_reg_z_mean_z.nii.gz ../template/maps_mean_z/mge2template_reg_z_mean_z.nii.gz
 
-fslview ../template/maps_mean_z/FivimXDstar_map_mean_dirs_reg_z_mean_z.nii.gz ../template/maps_mean_z/Fivim_map_mean_dirs_reg_z_mean_z.nii.gz ../template/maps_mean_z/Dstar_map_mean_dirs_reg_z_mean_z.nii.gz ../template/maps_mean_z/Dphase_map_reg_z_mean_z.nii.gz ../template/maps_mean_z/Dread_map_reg_z_mean_z.nii.gz ../template/maps_mean_z/Dslice_map_reg_z_mean_z.nii.gz &
+fslview -m single ../template/maps_mean_z/mge2template_reg_z_mean_z.nii.gz ../template/maps_mean_z/FivimXDstar_map_mean_dirs_reg_z_mean_z.nii.gz  -b 0,0.003 -l $jet ../template/maps_mean_z/Fivim_map_mean_dirs_reg_z_mean_z.nii.gz  -b 0,0.3 -l $jet ../template/maps_mean_z/Dstar_map_mean_dirs_reg_z_mean_z.nii.gz  -b 0,0.020 -l $jet ../template/maps_mean_z/Dphase_map_reg_z_mean_z.nii.gz  -b 0,0.0009 -l $jet ../template/maps_mean_z/Dread_map_reg_z_mean_z.nii.gz  -b 0,0.0009 -l $jet ../template/maps_mean_z/Dslice_map_reg_z_mean_z.nii.gz  -b 0,0.0020 -l $jet &
 
 # ============================================================================================================
 # PROCESS MAPS IN NATIVE SPACE (averaging across directions, register across slices, average across slices)
@@ -192,22 +192,23 @@ fslview ../template/maps_mean_z/FivimXDstar_map_mean_dirs_reg_z_mean_z.nii.gz ..
 mkdir ../phase/ivim_maps_read2phase
 mkdir ../phase/ivim_maps_slice2phase
 mkdir ../phase/ivim_maps_mean_dirs
+IVIM_PARAMS="Fivim Dstar FivimXDstar D"
 for param in ${IVIM_PARAMS}; do
 	# warp to phase space
-	sct_apply_transfo -i ../read/ivim_maps/${param}.nii.gz -d phase_highb_mean.nii.gz -w warp_read2phase.nii.gz -o ../phase/ivim_maps_read2phase/${param}.nii.gz
-	sct_apply_transfo -i ../slice/ivim_maps/${param}.nii.gz -d phase_highb_mean.nii.gz -w warp_slice2phase.nii.gz -o ../phase/ivim_maps_slice2phase/${param}.nii.gz
+	sct_apply_transfo -i ../read/ivim_maps/${param}_map.nii.gz -d phase_highb_mean.nii.gz -w warp_read2phase.nii.gz -o ../phase/ivim_maps_read2phase/${param}_map.nii.gz
+	sct_apply_transfo -i ../slice/ivim_maps/${param}_map.nii.gz -d phase_highb_mean.nii.gz -w warp_slice2phase.nii.gz -o ../phase/ivim_maps_slice2phase/${param}_map.nii.gz
 	# average across diffusion-encoding directions
-	fslmaths ../phase/ivim_maps/${param}.nii.gz -add ../phase/ivim_maps_read2phase/${param}.nii.gz -add ../phase/ivim_maps_slice2phase/${param}.nii.gz -div 3 ../phase/ivim_maps_mean_dirs/${param}.nii.gz
+	fslmaths ../phase/ivim_maps/${param}_map.nii.gz -add ../phase/ivim_maps_read2phase/${param}_map.nii.gz -add ../phase/ivim_maps_slice2phase/${param}_map.nii.gz -div 3 ../phase/ivim_maps_mean_dirs/${param}_map.nii.gz
 	# # average across slices
 	# fslmaths ../phase/ivim_maps_mean_dirs/${param}.nii.gz -Zmean ../phase/ivim_maps_mean_dirs/${param}_mean_z.nii.gz
 done
 
-fslview ../phase/ivim_maps_mean_dirs/FivimXDstar_map.nii.gz ../phase/ivim_maps_mean_dirs/Fivim_map.nii.gz ../phase/ivim_maps_mean_dirs/Dstar_map.nii.gz ../phase/ivim_maps_mean_dirs/D_map.nii.gz &
+fslview -m lightbox mge2phase.nii.gz ../phase/ivim_maps_mean_dirs/FivimXDstar_map.nii.gz  -b 0,0.003 -l $jet ../phase/ivim_maps_mean_dirs/Fivim_map.nii.gz  -b 0,0.3 -l $jet ../phase/ivim_maps_mean_dirs/Dstar_map.nii.gz  -b 0,0.020 -l $jet ../phase/ivim_maps_mean_dirs/D_map.nii.gz -b 0,0.0015 -l $jet &
 
 # REGISTER ACROSS SLICES BASED ON THE ANATOMIC MGE AND AVERAGE ACROSS SLICES
 # ------------------------------------------------------------------------------------------------------------
 zRef=4
 reg_across_slices.py -ref mge2phase.nii.gz -sliceref $zRef -mask ../phase/seg_dilated.nii.gz -maps ../phase/ivim_maps_mean_dirs/Fivim_map.nii.gz,../phase/ivim_maps_mean_dirs/Dstar_map.nii.gz,../phase/ivim_maps_mean_dirs/FivimXDstar_map.nii.gz,../phase/ivim_maps_mean_dirs/D_map.nii.gz -owarp ../phase/ivim_maps_mean_dirs/warps_mean_z -omap ../phase/ivim_maps_mean_dirs/maps_mean_z
 
-fslview ../phase/ivim_maps_mean_dirs/maps_mean_z/ref_reg_z_mean_z.nii.gz ../phase/ivim_maps_mean_dirs/maps_mean_z/FivimXDstar_map_reg_z_mean_z.nii.gz ../phase/ivim_maps_mean_dirs/maps_mean_z/Fivim_map_reg_z_mean_z.nii.gz ../phase/ivim_maps_mean_dirs/maps_mean_z/Dstar_map_reg_z_mean_z.nii.gz ../phase/ivim_maps_mean_dirs/maps_mean_z/D_map_reg_z_mean_z.nii.gz &
+fslview -m single ../phase/ivim_maps_mean_dirs/maps_mean_z/ref_reg_z_mean_z.nii.gz  -b 0,900 ../phase/ivim_maps_mean_dirs/maps_mean_z/FivimXDstar_map_reg_z_mean_z.nii.gz  -b 0,0.003 -l $jet ../phase/ivim_maps_mean_dirs/maps_mean_z/Fivim_map_reg_z_mean_z.nii.gz  -b 0,0.3 -l $jet ../phase/ivim_maps_mean_dirs/maps_mean_z/Dstar_map_reg_z_mean_z.nii.gz  -b 0,0.020 -l $jet ../phase/ivim_maps_mean_dirs/maps_mean_z/D_map_reg_z_mean_z.nii.gz  -b 0,0.0015 -l $jet &
 
