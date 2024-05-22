@@ -168,15 +168,15 @@ ivim_simu_plot_required_snr.py -input required_snr_one_step_fit/sim_results_*.pk
 # Publications where the IVIM-toolbox was used
 
 ## Scientific articles
-- Lévy S, Rapacchi S, Massire A, et al. Intravoxel Incoherent Motion at 7 Tesla to quantify human spinal cord perfusion: limitations and promises, *Magn Reson Med*. 2020;00:1–20. [https://doi.org/10.1002/mrm.28195](https://doi.org/10.1002/mrm.28195)
-- Lebret A, Lévy S, Pfender N, Farshad M, Altorfer FC, Callot V, Curt A, Freund P, Seif M. Investigation of perfusion impairment in degenerative cervical myelopathy beyond the site of cord compression, *Scientific Reports*. 2023;13(1):22660 [https://doi.org/10.1038/s41598-023-49896-3](https://doi.org/10.1038/s41598-023-49896-3).
+- Lévy S, Rapacchi S, Massire A, et al. **Intravoxel Incoherent Motion at 7 Tesla to quantify human spinal cord perfusion: limitations and promises**. *Magn Reson Med*. 2020;00:1–20. [https://doi.org/10.1002/mrm.28195](https://doi.org/10.1002/mrm.28195)
+- Lebret A, Lévy S, Pfender N, Farshad M, Altorfer FC, Callot V, Curt A, Freund P, Seif M. **Investigation of perfusion impairment in degenerative cervical myelopathy beyond the site of cord compression**. *Scientific Reports*. 2023;13(1):22660 [https://doi.org/10.1038/s41598-023-49896-3](https://doi.org/10.1038/s41598-023-49896-3).
 
 ## Conference proceedings
-- Lévy S, Rapacchi S, Massire A, et al. Intra-Voxel Incoherent Motion at 7T to Quantify Human Spinal Cord Microperfusion: Pitfalls and Promises. In Proc. Int. Soc. Magn. Reson. Med. 27, 0301. Montreal, QC, Canada, 2018.
-- Lévy S, Freund P, Callot V, Seif M. Spinal cord perfusion mapping using Intra-Voxel Incoherent Motion at 3T in healthy individuals and Degenerative Cervical Myelopathy patients. In Proc. Int. Soc. Magn. Reson. Med. 30, 3462. Virtual Conference, 2021.
-- Lebret A, Lévy S, Pfender N, et al. Investigating spinal cord perfusion impairment in degenerative cervical myelopathy (DCM) using Intravoxel Incoherent Motion (IVIM) MRI. In Proc. Int. Soc. Magn. Reson. Med. 32, 1145. Toronto, ON, Canada, 2023.
-- Lebret A, Lévy S, Freund P, et al. Test-retest repeatability of intravoxel incoherent motion (IVIM) MRI in the cervical cord at 3T. In Proc. Int. Soc. Magn. Reson. Med. 32, 2591. Singapore, 2024.
-- Lebret A, Frese S, Lévy S, et al. Intravoxel incoherent motion (IVIM) MRI in the cervical cord: application to traumatic spinal cord injury. In Proc. Int. Soc. Magn. Reson. Med. 33, 2332. Singapore, 2024.
+- Lévy S, Rapacchi S, Massire A, et al. **Intra-Voxel Incoherent Motion at 7T to Quantify Human Spinal Cord Microperfusion: Pitfalls and Promises**. *In Proc. Int. Soc. Magn. Reson. Med. 27*, 0301. Montreal, QC, Canada, 2018.
+- Lévy S, Freund P, Callot V, Seif M. **Spinal cord perfusion mapping using Intra-Voxel Incoherent Motion at 3T in healthy individuals and Degenerative Cervical Myelopathy patients**. *In Proc. Int. Soc. Magn. Reson. Med. 30*, 3462. Virtual Conference, 2021.
+- Lebret A, Lévy S, Pfender N, et al. **Investigating spinal cord perfusion impairment in degenerative cervical myelopathy (DCM) using Intravoxel Incoherent Motion (IVIM) MRI**. *In Proc. Int. Soc. Magn. Reson. Med. 32*, 1145. Toronto, ON, Canada, 2023.
+- Lebret A, Lévy S, Freund P, et al. **Test-retest repeatability of intravoxel incoherent motion (IVIM) MRI in the cervical cord at 3T**. *In Proc. Int. Soc. Magn. Reson. Med. 32*, 2591. Singapore, 2024.
+- Lebret A, Frese S, Lévy S, et al. **Intravoxel incoherent motion (IVIM) MRI in the cervical cord: application to traumatic spinal cord injury**. *In Proc. Int. Soc. Magn. Reson. Med. 33*, 2332. Singapore, 2024.
 
 ---
 # Funding
