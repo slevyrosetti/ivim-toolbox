@@ -181,7 +181,7 @@ https://doi.org/10.1162/imag_a_00468)
 - Lebret A, Lévy S, Pfender N, et al. **Investigating spinal cord perfusion impairment in degenerative cervical myelopathy (DCM) using Intravoxel Incoherent Motion (IVIM) MRI**. *In Proc. Int. Soc. Magn. Reson. Med. 32*, 1145. Toronto, ON, Canada, 2023.
 - Lévy S, Freund P, Callot V, Seif M. **Spinal cord perfusion mapping using Intra-Voxel Incoherent Motion at 3T in healthy individuals and Degenerative Cervical Myelopathy patients**. *In Proc. Int. Soc. Magn. Reson. Med. 30*, 3462. Virtual Conference, 2021.
 - Lévy S, Rapacchi S, Massire A, et al. **Intra-Voxel Incoherent Motion at 7T to Quantify Human Spinal Cord Microperfusion: Pitfalls and Promises**. *In Proc. Int. Soc. Magn. Reson. Med. 27*, 0301. Montreal, QC, Canada, 2018.
-- 
+
 
 ---
 # Funding
